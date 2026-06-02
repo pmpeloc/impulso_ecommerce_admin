@@ -6,7 +6,7 @@
 
 [DONE] scaffold-project — commit: 363b4ea
 [DONE] project-config
-[PENDING] types-definition
+[DONE] types-definition
 [PENDING] api-client
 [PENDING] auth-store
 [PENDING] login-page
