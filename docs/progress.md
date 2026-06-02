@@ -5,7 +5,7 @@
 ## Estado
 
 [DONE] scaffold-project — commit: 363b4ea
-[PENDING] project-config
+[DONE] project-config
 [PENDING] types-definition
 [PENDING] api-client
 [PENDING] auth-store
