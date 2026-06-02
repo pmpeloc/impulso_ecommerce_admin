@@ -8,7 +8,7 @@
 [DONE] project-config
 [DONE] types-definition
 [DONE] api-client
-[PENDING] auth-store
+[DONE] auth-store
 [PENDING] login-page
 [PENDING] auth-middleware
 [PENDING] layout-components
