@@ -9,7 +9,7 @@
 [DONE] types-definition
 [DONE] api-client
 [DONE] auth-store
-[PENDING] login-page
+[DONE] login-page
 [PENDING] auth-middleware
 [PENDING] layout-components
 [PENDING] dashboard-page
