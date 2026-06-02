@@ -14,7 +14,7 @@
 [DONE] layout-components
 [DONE] dashboard-page
 [DONE] product-card
-[PENDING] camera-capture
+[DONE] camera-capture
 [PENDING] image-preview
 [PENDING] audio-recorder
 [PENDING] product-form
