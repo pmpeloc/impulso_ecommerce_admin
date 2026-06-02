@@ -18,7 +18,8 @@ class MockMediaRecorder {
   start = vi.fn(() => { this.state = 'recording' })
   stop = vi.fn(() => { this.state = 'inactive' })
 
-  constructor(_stream: MediaStream, _options?: MediaRecorderOptions) {
+  constructor() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     capturedRecorder = this
   }
 }

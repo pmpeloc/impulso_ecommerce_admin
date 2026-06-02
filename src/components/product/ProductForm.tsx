@@ -10,7 +10,10 @@ import { AudioRecorder } from '@/components/audio/AudioRecorder'
 
 const schema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
-  price: z.coerce.number().positive('El precio debe ser mayor a 0'),
+  price: z.preprocess(
+    (v) => (typeof v === 'number' && isNaN(v) ? 0 : v),
+    z.number().positive('El precio debe ser mayor a 0'),
+  ),
   description: z.string().optional(),
 })
 
@@ -64,7 +67,7 @@ export function ProductForm({ onSubmit, isLoading = false }: ProductFormProps) {
         min="0"
         placeholder="ej: 9999"
         error={errors.price?.message}
-        {...register('price')}
+        {...register('price', { valueAsNumber: true })}
       />
 
       <Input

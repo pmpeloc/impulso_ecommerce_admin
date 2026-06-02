@@ -1,6 +1,6 @@
 import type { User, LoginInput, LoginResponse } from '@/types/auth'
 import type { Product, ProductsResponse } from '@/types/product'
-import type { PipelineJob, PublishLog, PipelineStatusResponse, ApiError } from '@/types/api'
+import type { PipelineStatusResponse, ApiError } from '@/types/api'
 
 describe('Types', () => {
   it('User se construye correctamente', () => {
