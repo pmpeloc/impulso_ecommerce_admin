@@ -12,8 +12,8 @@
 [DONE] login-page
 [DONE] auth-middleware
 [DONE] layout-components
-[PENDING] dashboard-page
-[PENDING] product-card
+[DONE] dashboard-page
+[DONE] product-card
 [PENDING] camera-capture
 [PENDING] image-preview
 [PENDING] audio-recorder
