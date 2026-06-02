@@ -3,6 +3,8 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
+import { Header } from '@/components/layout/Header'
+import { BottomNav } from '@/components/layout/BottomNav'
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const { token } = useAuth()
@@ -16,5 +18,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
   if (token === null) return null
 
-  return <>{children}</>
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Header />
+      <main className="flex-1 pb-20">{children}</main>
+      <BottomNav />
+    </div>
+  )
 }

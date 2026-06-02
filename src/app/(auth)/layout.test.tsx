@@ -16,6 +16,7 @@ vi.mock('@/hooks/useAuth', () => ({
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace: mockReplace }),
+  usePathname: () => '/dashboard',
 }))
 
 describe('AuthLayout', () => {

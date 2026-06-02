@@ -11,7 +11,7 @@
 [DONE] auth-store
 [DONE] login-page
 [DONE] auth-middleware
-[PENDING] layout-components
+[DONE] layout-components
 [PENDING] dashboard-page
 [PENDING] product-card
 [PENDING] camera-capture
