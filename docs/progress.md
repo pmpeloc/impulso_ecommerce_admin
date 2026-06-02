@@ -15,7 +15,7 @@
 [DONE] dashboard-page
 [DONE] product-card
 [DONE] camera-capture
-[PENDING] image-preview
+[DONE] image-preview
 [PENDING] audio-recorder
 [PENDING] product-form
 [PENDING] new-product-page
