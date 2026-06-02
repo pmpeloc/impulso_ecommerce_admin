@@ -10,7 +10,7 @@
 [DONE] api-client
 [DONE] auth-store
 [DONE] login-page
-[PENDING] auth-middleware
+[DONE] auth-middleware
 [PENDING] layout-components
 [PENDING] dashboard-page
 [PENDING] product-card
