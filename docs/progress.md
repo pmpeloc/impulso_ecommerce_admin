@@ -20,5 +20,5 @@
 [DONE] product-form
 [DONE] new-product-page
 [DONE] pipeline-status
-[PENDING] product-detail-page
+[DONE] product-detail-page
 [PENDING] pwa-manifest-icons
