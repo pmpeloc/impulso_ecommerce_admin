@@ -18,7 +18,7 @@
 [DONE] image-preview
 [DONE] audio-recorder
 [DONE] product-form
-[PENDING] new-product-page
+[DONE] new-product-page
 [PENDING] pipeline-status
 [PENDING] product-detail-page
 [PENDING] pwa-manifest-icons
