@@ -17,7 +17,7 @@
 [DONE] camera-capture
 [DONE] image-preview
 [DONE] audio-recorder
-[PENDING] product-form
+[DONE] product-form
 [PENDING] new-product-page
 [PENDING] pipeline-status
 [PENDING] product-detail-page
