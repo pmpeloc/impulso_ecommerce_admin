@@ -28,6 +28,13 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# E2E test secrets — nunca commitear
+e2e/.env.test
+
+# PWA — generados por next build, no commitear
+/public/sw.js
+/public/workbox-*.js
+
 # vercel
 .vercel
 

@@ -101,6 +101,19 @@ prodcast_app/
 │       ├── icon-192x192.png           # Generado con scripts/generate-icons.mjs
 │       └── icon-512x512.png
 │
+├── e2e/                           # Suite E2E con Playwright (vive en este repo — Opción C)
+│   ├── fixtures/
+│   │   ├── test-image.jpg         # Imagen fija 400x300px para tests
+│   │   └── test-audio.wav         # Tono WAV 5s para tests de Whisper (@paid)
+│   ├── helpers/
+│   ├── tests/
+│   │   ├── auth/
+│   │   ├── products/
+│   │   └── full-flow/
+│   ├── docs/
+│   ├── .env.test.example
+│   └── CLAUDE.md                  # Documentación completa de la suite E2E
+│
 ├── docs/
 │   ├── spec.md
 │   ├── plan.md
