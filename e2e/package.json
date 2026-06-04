@@ -1,0 +1,23 @@
+{
+  "name": "prodcast-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test --grep-invert @paid",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:full": "playwright test --grep @full",
+    "test:paid": "playwright test --grep @paid",
+    "test:all": "playwright test",
+    "report": "playwright show-report",
+    "test:ui": "playwright test --ui"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.49.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

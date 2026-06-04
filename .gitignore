@@ -28,8 +28,9 @@ yarn-error.log*
 # local env files
 .env*.local
 
-# E2E test secrets — nunca commitear
+# E2E test secrets, node modules — nunca commitear
 e2e/.env.test
+e2e/node_modules
 
 # PWA — generados por next build, no commitear
 /public/sw.js

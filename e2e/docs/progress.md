@@ -1,0 +1,12 @@
+[DONE] scaffold-package-json
+[DONE] scaffold-tsconfig
+[DONE] scaffold-playwright-config
+[DONE] helpers-api
+[DONE] helpers-auth
+[DONE] helpers-db-cleanup
+[DONE] tests-auth-login
+[DONE] tests-products-list
+[DONE] tests-products-create
+[DONE] tests-products-pipeline
+[DONE] tests-security-isolation
+[DONE] tests-full-flow-manufacturer
