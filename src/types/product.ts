@@ -4,7 +4,8 @@ export interface Product {
   id: string
   tenant_id: string
   name: string
-  description: string | null
+  description_transcription: string | null
+  description_optimized: string | null
   price: number
   status: ProductStatus
   image_url: string | null

@@ -176,6 +176,27 @@ Doble capa para compatibilidad con Edge runtime (middleware de Next.js):
 
 ## Tipos
 
+### `src/types/product.ts`
+```typescript
+interface Product {
+  id: string
+  tenantId: string
+  name: string
+  descriptionTranscription: string | null  // raw: Whisper o texto manual
+  descriptionOptimized: string | null      // processed: versión AI (null hasta que pipeline procese)
+  price: number
+  status: 'draft' | 'processing' | 'published' | 'failed'
+  imageUrl: string | null
+  imageOptimizedUrl: string | null
+  imageAiUrl: string | null
+  audioUrl: string | null
+  createdAt: string
+  updatedAt: string
+}
+```
+
+> **Convención en UI:** mostrar `descriptionOptimized` si existe, con fallback a `descriptionTranscription`. Nunca mostrar null al usuario.
+
 ### `src/types/auth.ts`
 ```typescript
 interface User {

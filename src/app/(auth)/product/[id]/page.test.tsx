@@ -27,7 +27,8 @@ const mockProduct: Product = {
   id: 'p1',
   tenant_id: 'tid',
   name: 'Almohada Premium',
-  description: 'Muy cómoda',
+  description_transcription: 'Muy cómoda',
+  description_optimized: 'Muy cómoda — versión mejorada',
   price: 9999,
   status: 'published',
   image_url: 'https://cdn.example.com/original.jpg',
@@ -61,8 +62,18 @@ describe('ProductDetailPage', () => {
     expect(screen.getByText('Almohada Premium')).toBeInTheDocument()
   })
 
-  it('muestra la descripción del producto', () => {
+  it('muestra description_optimized cuando está disponible', () => {
     mockUseProduct.mockReturnValue(loaded)
+    render(<ProductDetailPage params={{ id: 'p1' }} />)
+    expect(screen.getByText('Muy cómoda — versión mejorada')).toBeInTheDocument()
+  })
+
+  it('muestra description_transcription como fallback cuando optimized es null', () => {
+    mockUseProduct.mockReturnValue({
+      product: { ...mockProduct, description_optimized: null },
+      isLoading: false,
+      error: undefined,
+    })
     render(<ProductDetailPage params={{ id: 'p1' }} />)
     expect(screen.getByText('Muy cómoda')).toBeInTheDocument()
   })

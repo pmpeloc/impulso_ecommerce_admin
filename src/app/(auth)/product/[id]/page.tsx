@@ -69,8 +69,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         <p className="text-lg font-semibold text-gray-700">
           {priceFormatter.format(product.price)}
         </p>
-        {product.description && (
-          <p className="text-sm text-gray-500 pt-1">{product.description}</p>
+        {(product.description_optimized ?? product.description_transcription) && (
+          <p className="text-sm text-gray-500 pt-1">
+            {product.description_optimized ?? product.description_transcription}
+          </p>
         )}
       </div>
 
