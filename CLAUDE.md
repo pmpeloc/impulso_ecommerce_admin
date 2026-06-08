@@ -15,7 +15,7 @@ PWA (Progressive Web App) para que el fabricante capture productos desde su celu
 | Next.js | 14+ (App Router) | Framework principal |
 | TypeScript | strict mode | Tipado completo |
 | Tailwind CSS | 3+ | Estilos — mobile-first obligatorio |
-| Zustand | latest | Estado global cliente |
+| Zustand | ^5.0.14 | Estado global cliente — API v5 (sin `set` wrapper en `create`) |
 | React Hook Form | latest | Formularios |
 | @hookform/resolvers | ^5.4.0 | Integración Zod↔RHF — requerida |
 | Zod | 4.x | Validación de schemas |
@@ -159,14 +159,20 @@ export default withPWA({ /* next config */ })
 
 ## Mecanismo de Autenticación
 
-Doble capa para compatibilidad con Edge runtime (middleware de Next.js):
+Triple capa para compatibilidad con Edge runtime y client-side:
 
 **Capa 1 — Cookie** (leída por `middleware.ts` en Edge runtime):
 - `session=1` — seteada client-side en login (`document.cookie`)
 - Path `/`, SameSite `Lax`
 - El middleware redirige a `/login` si esta cookie no existe
 
-**Capa 2 — localStorage** (leído por el cliente vía Zustand):
+**Capa 2 — Layout client-side** (`(auth)/layout.tsx` — `'use client'`):
+- Verifica el token JWT de Zustand vía `useAuth()`
+- Si el token es `null` después de hidratar → `router.replace('/login')`
+- Protección redundante: cubre casos donde la cookie existe pero el token ya no
+
+**Capa 3 — localStorage** (leído por el cliente vía Zustand):
+- Las claves `TOKEN_KEY` y `REFRESH_TOKEN_KEY` son constantes exportadas desde `src/lib/api.ts` (no desde `auth.ts`)
 - `prodcast_token` — JWT de acceso
 - `prodcast_refresh_token` — refresh token guardado pero **auto-refresh NO implementado**
 
@@ -177,25 +183,36 @@ Doble capa para compatibilidad con Edge runtime (middleware de Next.js):
 ## Tipos
 
 ### `src/types/product.ts`
+
+> **Convención de nombres:** snake_case — los campos llegan directamente de Supabase sin transformación.
+
 ```typescript
+type ProductStatus = 'draft' | 'processing' | 'published' | 'failed'
+
 interface Product {
   id: string
-  tenantId: string
+  tenant_id: string
   name: string
-  descriptionTranscription: string | null  // raw: Whisper o texto manual
-  descriptionOptimized: string | null      // processed: versión AI (null hasta que pipeline procese)
+  description_transcription: string | null  // raw: Whisper o texto manual
+  description_optimized: string | null      // processed: versión AI (null hasta que pipeline procese)
   price: number
-  status: 'draft' | 'processing' | 'published' | 'failed'
-  imageUrl: string | null
-  imageOptimizedUrl: string | null
-  imageAiUrl: string | null
-  audioUrl: string | null
-  createdAt: string
-  updatedAt: string
+  status: ProductStatus
+  image_url: string | null
+  image_optimized_url: string | null
+  image_ai_url: string | null
+  audio_url: string | null
+  created_at: string
+  updated_at: string
+}
+
+interface ProductsResponse {
+  products: Product[]
+  total: number
 }
 ```
 
-> **Convención en UI:** mostrar `descriptionOptimized` si existe, con fallback a `descriptionTranscription`. Nunca mostrar null al usuario.
+> **Convención en UI:** mostrar `description_optimized` si existe, con fallback a `description_transcription`. Nunca mostrar null al usuario.
+> **Nota:** `slug` existe en la DB pero no es parte del contrato con la PWA — la app navega por `id`. El slug solo importa al storefront.
 
 ### `src/types/auth.ts`
 ```typescript
@@ -205,13 +222,59 @@ interface User {
   tenantId: string
   role: 'admin' | 'operator'   // union type estricto, no string
 }
+
+interface LoginInput {
+  email: string
+  password: string
+}
+
+interface LoginResponse {
+  token: string
+  refreshToken: string
+  user: User
+}
 ```
 
 ### `src/types/api.ts`
+
+> **Convención de nombres:** snake_case — excepción: `publishLogs` (camelCase) en `PipelineStatusResponse`, porque la API hace esa única transformación en el endpoint `/products/:id/pipeline`.
+
 ```typescript
+type PipelineJobStatus = 'pending' | 'processing' | 'done' | 'failed'
+type PipelineJobType   = 'ingestion' | 'publish'
+type PublishChannel    = 'whatsapp' | 'facebook' | 'mercadolibre' | 'ecommerce'
+type PublishLogStatus  = 'success' | 'failed'
+
+interface PipelineJob {
+  id: string
+  product_id: string
+  type: PipelineJobType
+  status: PipelineJobStatus
+  error: string | null
+  metadata: Record<string, unknown> | null
+  created_at: string
+  updated_at: string
+}
+
+interface PublishLog {
+  id: string
+  product_id: string
+  channel: PublishChannel
+  status: PublishLogStatus
+  external_id: string | null
+  error: string | null
+  published_at: string | null
+}
+
 interface PipelineStatusResponse {
   jobs: PipelineJob[]
-  publishLogs: PublishLog[]   // camelCase confirmado — la API mapea desde snake_case
+  publishLogs: PublishLog[]   // camelCase — la API mapea publish_logs → publishLogs
+}
+
+interface ApiError {
+  code: string
+  message: string
+  statusCode: number
 }
 ```
 
@@ -220,9 +283,15 @@ interface PipelineStatusResponse {
 ## Hooks de Polling
 
 ### `useProduct(id)`
-Polling adaptativo sobre `GET /products/:id`:
-- `refreshInterval: 5000` mientras `status` es `draft` o `processing`
-- `refreshInterval: 0` cuando `status` es `published` o `failed`
+Polling adaptativo sobre `GET /products/:id`. Usa forma de función en `refreshInterval` para leer el estado del dato actual (no del prop externo):
+```typescript
+refreshInterval: (current) => {
+  const status = current?.product?.status
+  return status && TERMINAL_STATUSES.includes(status) ? 0 : 5000
+}
+```
+- 5000ms mientras `status` es `draft` o `processing`
+- 0 (detiene el polling) cuando `status` es `published` o `failed`
 
 ### `usePipeline(productId, productStatus)`
 Polling condicional sobre `GET /products/:id/pipeline`:
@@ -276,7 +345,7 @@ useAudioRecorder(): {
   seconds: number
   audioUrl: string | null
   blob: Blob | null
-  mimeType: string | null
+  mimeType: string        // '' (empty string) si MediaRecorder no disponible — nunca null
   startRecording: () => void
   stopRecording: () => void
   discard: () => void
@@ -351,6 +420,13 @@ NEXT_PUBLIC_APP_NAME=Prodcast
 
 ---
 
+## Decisiones de producto documentadas
+
+### `ACTIVE_CHANNELS` en `PipelineStatus`
+El componente `PipelineStatus` solo muestra los canales `['whatsapp', 'facebook', 'mercadolibre']`. El canal `ecommerce` existe como `PublishChannel` válido pero está excluido intencionalmente de la UI — el ecommerce propio no requiere mostrar estado de publicación en la PWA del fabricante.
+
+---
+
 ## Pendientes documentados
 
 | Item | Estado |
@@ -360,6 +436,7 @@ NEXT_PUBLIC_APP_NAME=Prodcast
 | `src/components/ui/Modal.tsx` | No implementado — no fue necesario en Sprint 1 |
 | `src/lib/utils.ts` | No implementado — no fue necesario en Sprint 1 |
 | Auto-refresh de token | `prodcast_refresh_token` guardado pero no consumido — implementar en Sprint 2 |
+| `src/hooks/useCamera.ts` | Implementado pero **no usado** — `NewProductPage` maneja el estado de imagen directamente sin este hook. Evaluar si eliminar o adoptar en Sprint 2 |
 
 ---
 
