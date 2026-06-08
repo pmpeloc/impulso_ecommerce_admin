@@ -60,4 +60,20 @@ describe('middleware', () => {
     const redirectUrl: URL = mockRedirect.mock.calls[0][0]
     expect(redirectUrl.origin).toBe('http://localhost:3000')
   })
+
+  it('redirige / a /login cuando no hay sesión', () => {
+    middleware(makeRequest('/'))
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1)
+    const redirectUrl: URL = mockRedirect.mock.calls[0][0]
+    expect(redirectUrl.pathname).toBe('/login')
+  })
+
+  it('redirige / a /dashboard cuando hay sesión', () => {
+    middleware(makeRequest('/', { session: '1' }))
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1)
+    const redirectUrl: URL = mockRedirect.mock.calls[0][0]
+    expect(redirectUrl.pathname).toBe('/dashboard')
+  })
 })

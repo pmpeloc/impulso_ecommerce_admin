@@ -48,7 +48,7 @@ prodcast_app/
 │   │   │       └── [id]/page.tsx
 │   │   ├── login/page.tsx
 │   │   ├── layout.tsx
-│   │   └── page.tsx                   # ⚠️ Pendiente: redirigir a /dashboard o /login
+│   │   └── page.tsx                   # Redirect: sesión → /dashboard, sin sesión → /login
 │   │
 │   ├── components/
 │   │   ├── ui/
@@ -355,7 +355,7 @@ NEXT_PUBLIC_APP_NAME=Prodcast
 
 | Item | Estado |
 |------|--------|
-| `src/app/page.tsx` | Sigue siendo el scaffold de Next.js — pendiente redirect a /dashboard o /login |
+| `src/app/page.tsx` | Redirect implementado: con sesión → `/dashboard`, sin sesión → `/login` (middleware + fallback server component) |
 | `src/components/ui/Card.tsx` | No implementado — no fue necesario en Sprint 1 |
 | `src/components/ui/Modal.tsx` | No implementado — no fue necesario en Sprint 1 |
 | `src/lib/utils.ts` | No implementado — no fue necesario en Sprint 1 |
