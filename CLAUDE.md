@@ -1,10 +1,37 @@
 # Prodcast App — Frontend
 
-> Leer también: `../CLAUDE.md` para contexto global del proyecto.
+> Leer también: `../CLAUDE.md` para contexto global del proyecto y `AGENTS.md` (raíz de este repo) si trabajás con Codex.
 
 ## Propósito
 
 PWA (Progressive Web App) para que el fabricante capture productos desde su celular: foto, nombre, descripción por audio y precio. Diseñada para ser simple, rápida y funcionar con conectividad limitada.
+
+---
+
+## Diseño — Design System (Rediseño Hi-Fi ✅ 2026-06-10)
+
+Rediseño completo aplicado vía Claude Design (hi-fi handoff) + Codex. Tema dark-mode, inspirado en Vercel Dashboard:
+
+| Token | Valor |
+|-------|-------|
+| Brand / primary | `#6366F1` (indigo) |
+| Background | `#0A0A0B` |
+| Surface (cards/paneles) | `#111113` |
+| Border | `#1F1F23` |
+| Text primary | `#FAFAFA` |
+| Text secondary | `#A1A1AA` |
+| Success | `#10B981` |
+| Warning | `#F59E0B` |
+| Error | `#EF4444` |
+| AI/processing | `#A855F7` |
+| Tipografía UI | Inter |
+| Tipografía mono (IDs/SKUs) | JetBrains Mono |
+| Border radius | 8px |
+| Transiciones | 150ms ease |
+
+Tokens definidos en `src/app/globals.css` y `tailwind.config.ts`. Logo oficial en `public/logo-mark.svg`. Shell responsive: sidebar desktop + header/BottomNav mobile (`AppShellDesk`). Fix aplicado: contraste de inputs en login (antes texto blanco sobre blanco).
+
+> **Convención AGENTS.md:** además de este `CLAUDE.md`, el repo tiene `AGENTS.md` en la raíz — es el equivalente para agentes Codex/OpenAI. Mantenerlo sincronizado cuando cambien stack, tipos o el design system.
 
 ---
 
@@ -97,6 +124,7 @@ prodcast_app/
 │
 ├── public/
 │   ├── manifest.json
+│   ├── logo-mark.svg                  # Logo oficial del rediseño Hi-Fi (Claude Design)
 │   └── icons/
 │       ├── icon-192x192.png           # Generado con scripts/generate-icons.mjs
 │       └── icon-512x512.png
@@ -437,6 +465,23 @@ El componente `PipelineStatus` solo muestra los canales `['whatsapp', 'facebook'
 | `src/lib/utils.ts` | No implementado — no fue necesario en Sprint 1 |
 | Auto-refresh de token | `prodcast_refresh_token` guardado pero no consumido — implementar en Sprint 2 |
 | `src/hooks/useCamera.ts` | Implementado pero **no usado** — `NewProductPage` maneja el estado de imagen directamente sin este hook. Evaluar si eliminar o adoptar en Sprint 2 |
+| `e2e/` | Excluido de `tsconfig.json` (type-check) y `vitest.config.ts` (discovery) — Playwright corre con su propio runner/dependencias |
+| `next/image` | Adoptado en login, header, captura, preview y detalle de producto. Previews `blob:` y URLs dinámicas usan `unoptimized` |
+
+### Deuda funcional del rediseño Hi-Fi (handoff Claude Design)
+
+El handoff incluye pantallas/interacciones que requieren lógica o endpoints nuevos — no implementadas, solo visual estático donde aplica:
+
+| Item | Detalle |
+|------|---------|
+| Dashboard — búsqueda y filtros | Búsqueda por nombre, filtros por estado/canal y selección en lote requieren estado adicional + posible endpoint con query params |
+| Dashboard — canal por fila | Mostrar canal de publicación por producto en la tabla requiere exponer ese dato desde la API |
+| Captura — preview en vivo | Vista previa textual del producto mientras se completa el formulario — requiere compartir estado entre pasos |
+| Captura — guardar borrador | Botón "Guardar borrador" requiere endpoint o flujo de creación parcial |
+| Detalle — edición completa | Editar nombre/precio/descripción, cambiar foto, asignar SKU y guardar cambios — requiere endpoints `PATCH /products/:id` (no existe aún) |
+| Detalle — reprocesar | Botón para re-disparar el pipeline de un producto — requiere endpoint nuevo |
+| Detalle — publicar manualmente | Trigger manual de publicación por canal — requiere endpoint nuevo |
+| Pipeline — reintentos | Reintentar un job o canal específico tras fallo — requiere endpoint nuevo. `ecommerce` sigue excluido de la UI por decisión de producto (sin cambios) |
 
 ---
 

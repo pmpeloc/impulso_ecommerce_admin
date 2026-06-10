@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Product, ProductStatus } from '@/types/product'
 
 interface ProductCardProps {
@@ -39,11 +40,16 @@ export function ProductCard({ product }: ProductCardProps) {
     >
       <div className="contents md:flex md:min-w-0 md:items-center md:gap-3">
         {imgSrc ? (
-          <img
-            src={imgSrc}
-            alt={product.name}
-            className="h-14 w-14 flex-shrink-0 rounded-lg object-cover md:h-10 md:w-10"
-          />
+          <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg md:h-10 md:w-10">
+            <Image
+              src={imgSrc}
+              alt={product.name}
+              fill
+              unoptimized
+              sizes="56px"
+              className="object-cover"
+            />
+          </div>
         ) : (
           <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border border-white/5 bg-[#30283C] text-[#8A8A96] md:h-10 md:w-10">
             <span className="text-lg" aria-hidden="true">◇</span>

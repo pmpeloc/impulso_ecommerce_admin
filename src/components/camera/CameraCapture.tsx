@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import Image from 'next/image'
 
 interface CameraCaptureProps {
   onCapture: (file: File) => void
@@ -28,11 +29,16 @@ export function CameraCapture({ onCapture, previewUrl }: CameraCaptureProps) {
       />
 
       {previewUrl && (
-        <img
-          src={previewUrl}
-          alt="Foto capturada"
-          className="aspect-square w-full max-w-sm rounded-2xl border border-border object-cover shadow-panel"
-        />
+        <div className="relative aspect-square w-full max-w-sm overflow-hidden rounded-2xl border border-border shadow-panel">
+          <Image
+            src={previewUrl}
+            alt="Foto capturada"
+            fill
+            unoptimized
+            sizes="(max-width: 768px) 100vw, 384px"
+            className="object-cover"
+          />
+        </div>
       )}
 
       <button

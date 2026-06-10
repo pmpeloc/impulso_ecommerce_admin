@@ -54,4 +54,24 @@
 [PENDING] Captura — preview textual en vivo y “Guardar borrador” requieren compartir estado del formulario y/o endpoint específico.
 [PENDING] Detalle/edición — edición, SKU, reprocesar, cambiar foto, guardar cambios y publicar manualmente requieren campos/endpoints no disponibles.
 [PENDING] Pipeline — reintento por job o por canal requiere endpoints/acciones nuevas; ecommerce permanece excluido de la UI por decisión de producto.
-[PENDING] Tests — `npm test` también recoge por configuración los specs Playwright de `e2e/`; fallan fuera de su runner y sin credenciales Supabase. La suite unitaria `vitest run src` pasa completa.
+[DONE] Tests — Vitest excluye `e2e/`; los specs Playwright conservan su runner y dependencias independientes.
+
+## Fix Deploy Vercel
+
+> Completado: 2026-06-10
+
+[DONE] tsconfig.json — excluye el subproyecto `e2e/` del type-check de Next/Vercel
+[DONE] vitest.config.ts — excluye `e2e/` del discovery de Vitest; Playwright conserva su runner independiente
+[DONE] src/app/login/page.tsx — logo migrado a `next/image`
+[DONE] src/components/layout/Header.tsx — logos del shell migrados a `next/image`
+[DONE] src/components/camera/CameraCapture.tsx — preview blob migrado a `next/image` con `unoptimized`
+[DONE] src/components/camera/ImagePreview.tsx — preview blob migrado a `next/image` con `unoptimized`
+[DONE] src/app/(auth)/product/new/page.tsx — preview de captura migrado a `next/image`
+[DONE] src/app/(auth)/product/[id]/page.tsx — imagen dinámica del producto migrada a `next/image`
+[DONE] src/components/product/ProductCard.tsx — thumbnail dinámico migrado a `next/image`
+[DONE] src/test/setup.ts — mock de `next/image` para JSDOM sin alterar producción
+[DONE] verificación deploy — 176 tests pasan; `next build` finaliza sin warnings `no-img-element` ni errores Playwright
+
+### Deuda resuelta
+
+[DONE] Tests — Vitest ya no recoge `e2e/**/*.spec.ts`; la suite E2E continúa aislada en `e2e/`.

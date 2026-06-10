@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useProduct } from '@/hooks/useProduct'
 import { PipelineStatus } from '@/components/product/PipelineStatus'
 
@@ -54,11 +55,16 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         <div className="min-w-0 flex-1">
           <div className="relative overflow-hidden rounded-[20px] border border-border bg-surface">
             {imgSrc ? (
-              <img
-                src={imgSrc}
-                alt={product.name}
-                className="aspect-square w-full object-cover"
-              />
+              <div className="relative aspect-square w-full">
+                <Image
+                  src={imgSrc}
+                  alt={product.name}
+                  fill
+                  unoptimized
+                  sizes="(max-width: 768px) 100vw, 45vw"
+                  className="object-cover"
+                />
+              </div>
             ) : (
               <div className="flex aspect-square w-full items-center justify-center bg-[#30283C]">
                 <span className="text-sm text-[#8A8A96]">Sin imagen</span>

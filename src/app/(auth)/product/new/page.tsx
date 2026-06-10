@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { CameraCapture } from '@/components/camera/CameraCapture'
 import { ImagePreview } from '@/components/camera/ImagePreview'
@@ -93,7 +94,16 @@ export default function NewProductPage() {
               <aside className="px-4 pb-4 md:sticky md:top-[18px] md:w-72 md:px-0 md:pb-0">
                 <p className="mb-2 text-[13px] font-medium text-[#A1A1AC]">Vista previa</p>
                 <div className="overflow-hidden rounded-[20px] border border-border bg-[#0A0A0B]">
-                  <img src={previewUrl} alt="Vista previa del producto" className="aspect-square w-full object-cover" />
+                  <div className="relative aspect-square w-full">
+                    <Image
+                      src={previewUrl}
+                      alt="Vista previa del producto"
+                      fill
+                      unoptimized
+                      sizes="288px"
+                      className="object-cover"
+                    />
+                  </div>
                   <div className="space-y-3 p-4">
                     <div className="h-3 w-3/4 rounded bg-surface-input" />
                     <div className="h-4 w-2/5 rounded bg-surface-input" />

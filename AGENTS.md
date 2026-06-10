@@ -126,6 +126,12 @@ interface PipelineStatusResponse {
 
 **Implementado 2026-06-10:** tema dark + indigo, login, shell responsive (sidebar desktop + header/bottom nav mobile), dashboard tabla/cards, captura y formulario, audio recorder, detalle y pipeline multicanal. El rediseño mantiene hooks, auth, polling, API y tipos existentes.
 
-**Verificación:** 176 tests unitarios pasan y `next build` finaliza correctamente. `npm test` también intenta recoger `e2e/**/*.spec.ts` con Vitest; esos specs requieren Playwright y credenciales Supabase, por lo que deben ejecutarse con su runner/configuración E2E.
+**Verificación:** 176 tests unitarios pasan y `next build` finaliza correctamente. Vitest excluye `e2e/`; los specs E2E se ejecutan con Playwright desde su subproyecto.
 
 **Deuda funcional del handoff:** búsqueda/filtros/acciones en lote, preview textual en vivo, guardado de borrador, edición/SKU/reprocesamiento y reintentos por canal requieren lógica o endpoints nuevos. Ver `docs/progress.md`.
+
+## Estado actual — Deploy Vercel
+
+**Fix implementado 2026-06-10:** Next/Vercel excluye `e2e/` del type-check y Vitest excluye los specs Playwright de su discovery. Todas las imágenes del rediseño usan `next/image`; previews blob y URLs dinámicas usan `unoptimized` para no depender de dominios remotos configurados.
+
+**Verificación vigente:** 176 tests unitarios pasan y `next build` finaliza sin warnings `@next/next/no-img-element` ni errores por `@playwright/test`.

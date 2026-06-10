@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -17,7 +18,7 @@ export function Header() {
     <>
       <header className="sticky top-0 z-30 flex h-[54px] items-center justify-between border-b border-border bg-[#0A0A0BCC] px-4 backdrop-blur-xl md:hidden">
         <Link href="/dashboard" className="flex items-center gap-2.5">
-          <img src="/logo-mark.svg" alt="" className="h-7 w-7 rounded-lg" />
+          <Image src="/logo-mark.svg" alt="" width={28} height={28} className="rounded-lg" />
           <span className="text-base font-bold tracking-[-0.02em]">Prodcast</span>
         </Link>
         <button onClick={logout} className="rounded-lg px-2 py-1 text-sm text-[#8A8A96] transition hover:bg-surface-raised hover:text-[#EDEDF0]">
@@ -27,7 +28,7 @@ export function Header() {
 
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-44 flex-col border-r border-border bg-[#0C0C0E] p-2.5 md:flex">
         <Link href="/dashboard" className="flex items-center gap-2.5 px-1.5 py-2">
-          <img src="/logo-mark.svg" alt="" className="h-7 w-7 rounded-lg" />
+          <Image src="/logo-mark.svg" alt="" width={28} height={28} className="rounded-lg" />
           <span className="font-bold tracking-[-0.02em]">PRODCAST</span>
         </Link>
         <p className="mb-2 mt-4 px-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#6B6B76]">Taller</p>
