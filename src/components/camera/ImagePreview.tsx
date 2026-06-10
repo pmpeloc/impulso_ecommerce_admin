@@ -8,13 +8,13 @@ interface ImagePreviewProps {
 
 export function ImagePreview({ previewUrl, onRetake, onConfirm }: ImagePreviewProps) {
   return (
-    <div className="flex flex-col gap-5 p-4">
+    <div className="flex flex-col gap-5 p-4 md:p-0">
       <img
         src={previewUrl}
         alt="Vista previa del producto"
-        className="w-full aspect-square object-cover rounded-2xl shadow-md"
+        className="aspect-square w-full rounded-[20px] border border-border object-cover shadow-panel"
       />
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row-reverse">
         <Button onClick={onConfirm}>Continuar</Button>
         <Button variant="secondary" onClick={onRetake}>Retomar foto</Button>
       </div>

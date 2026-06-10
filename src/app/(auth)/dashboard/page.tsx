@@ -15,8 +15,8 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-40" role="status" aria-label="Cargando productos">
-        <div className="w-8 h-8 border-4 border-black border-t-transparent rounded-full animate-spin" />
+      <div className="flex h-64 items-center justify-center" role="status" aria-label="Cargando productos">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border-strong border-t-brand" />
       </div>
     )
   }
@@ -24,42 +24,76 @@ export default function DashboardPage() {
   if (error) {
     return (
       <div className="p-6 text-center">
-        <p className="text-red-500">Error al cargar los productos</p>
+        <p className="text-error">Error al cargar los productos</p>
       </div>
     )
   }
 
   return (
-    <div className="p-4">
+    <div className="mx-auto max-w-6xl p-4 md:p-[18px]">
+      <div className="mb-5 flex items-end justify-between gap-4">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#6B6B76]">Productos</p>
+          <h1 className="mt-1 text-xl font-bold tracking-[-0.02em] md:text-2xl">Todos los productos</h1>
+          <p className="mt-1 text-sm text-[#8A8A96]">{total} productos en el catálogo</p>
+        </div>
+        <Link
+          href="/product/new"
+          className="hidden items-center gap-2 rounded-lg bg-brand px-3.5 py-2.5 text-sm font-semibold text-white shadow-brand transition hover:bg-[#5457EE] md:flex"
+        >
+          <span aria-hidden="true">+</span> Agregar producto
+        </Link>
+      </div>
+
+      <div className="mb-4 hidden flex-col gap-2.5 md:flex">
+        <div className="flex gap-2.5">
+          <div className="flex h-9 flex-1 items-center gap-2 rounded-lg border border-border-strong bg-surface-input px-3 text-sm text-[#8A8A96]">
+            <span aria-hidden="true">⌕</span> Buscar producto o ID…
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <span className="rounded-lg border border-border-strong bg-surface-input px-3 py-2 text-xs text-[#A1A1AC]">Estado</span>
+          <span className="rounded-lg border border-border-strong bg-surface-input px-3 py-2 text-xs text-[#A1A1AC]">Canal</span>
+        </div>
+      </div>
+
       {products.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
-          <p className="text-lg mb-1">Aún no hay productos</p>
-          <p className="text-sm">Tocá + para agregar el primero</p>
+        <div className="flex flex-col items-center rounded-xl border border-border bg-surface px-5 py-16 text-center">
+          <div className="grid h-[72px] w-[72px] place-items-center rounded-[20px] border border-dashed border-border-strong text-3xl text-[#8A8A96]">◇</div>
+          <p className="mb-1 mt-4 text-lg font-semibold">Aún no hay productos</p>
+          <p className="text-sm text-[#8A8A96]">Tocá “Nuevo producto” para agregar el primero</p>
         </div>
       ) : (
         <>
-          <div className="space-y-3">
+          <div className="space-y-3 md:space-y-0 md:overflow-hidden md:rounded-xl md:border md:border-border md:bg-surface">
+            <div className="hidden grid-cols-[minmax(220px,2fr)_110px_120px_110px_74px] items-center bg-surface-raised px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8A8A96] md:grid">
+              <span>Producto</span>
+              <span>Precio</span>
+              <span>Estado</span>
+              <span>Canales</span>
+              <span>Actualizado</span>
+            </div>
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6 px-1">
+            <div className="mt-6 flex items-center justify-between px-1">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-4 py-2 text-sm font-medium text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-[#A1A1AC] transition hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Anterior
               </button>
-              <span className="text-sm text-gray-400">
+              <span className="font-mono text-xs text-[#8A8A96]">
                 {page} / {totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-4 py-2 text-sm font-medium text-gray-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-[#A1A1AC] transition hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Siguiente
               </button>
@@ -71,7 +105,7 @@ export default function DashboardPage() {
       <Link
         href="/product/new"
         aria-label="Nuevo producto"
-        className="fixed bottom-20 right-4 w-14 h-14 bg-black text-white rounded-full flex items-center justify-center text-2xl shadow-lg hover:bg-gray-800 transition-colors z-10"
+        className="fixed bottom-20 right-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-brand text-2xl text-white shadow-brand transition hover:bg-[#5457EE] md:hidden"
       >
         +
       </Link>

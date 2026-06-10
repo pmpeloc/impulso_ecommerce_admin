@@ -45,10 +45,15 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6 bg-gray-50">
-      <div className="w-full max-w-sm">
-        <h1 className="text-3xl font-bold text-center mb-2">Prodcast</h1>
-        <p className="text-gray-500 text-center mb-8 text-sm">Iniciá sesión para continuar</p>
+    <main className="flex min-h-screen items-center justify-center bg-[radial-gradient(110%_70%_at_50%_-10%,rgba(99,102,241,0.16),transparent_55%)] p-6">
+      <div className="w-full max-w-[372px] rounded-[20px] border border-border bg-surface p-7 shadow-panel sm:p-[30px]">
+        <div className="mb-6 flex flex-col items-center gap-3.5 text-center">
+          <img src="/logo-mark.svg" alt="Prodcast" className="h-[54px] w-[54px] rounded-[14px] shadow-brand" />
+          <div>
+            <h1 className="text-[26px] font-bold tracking-[-0.02em] text-[#EDEDF0]">Prodcast</h1>
+            <p className="mt-1.5 text-sm text-[#8A8A96]">Iniciá sesión para continuar</p>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
           <Input
@@ -67,13 +72,16 @@ export default function LoginPage() {
           />
 
           {apiError && (
-            <p className="text-sm text-red-500 text-center">{apiError}</p>
+            <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-center text-sm text-error">
+              {apiError}
+            </p>
           )}
 
-          <Button type="submit" isLoading={isSubmitting} className="mt-2">
+          <Button type="submit" isLoading={isSubmitting} className="mt-1">
             Iniciar sesión
           </Button>
         </form>
+        <p className="mt-6 text-center text-xs text-[#6B6B76]">Red Impulso · Panel del fabricante</p>
       </div>
     </main>
   )

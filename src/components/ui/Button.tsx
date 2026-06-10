@@ -1,6 +1,6 @@
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean
-  variant?: 'primary' | 'secondary'
+  variant?: 'primary' | 'secondary' | 'ghost'
 }
 
 export function Button({
@@ -11,10 +11,11 @@ export function Button({
   className = '',
   ...props
 }: ButtonProps) {
-  const base = 'w-full py-3 px-4 rounded-xl font-semibold text-base transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+  const base = 'w-full rounded-lg px-4 py-3 text-sm font-semibold transition duration-150 ease-out hover:-translate-y-px active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-[#0A0A0B] disabled:pointer-events-none disabled:opacity-50'
   const variants = {
-    primary: 'bg-black text-white hover:bg-gray-800 focus:ring-black',
-    secondary: 'bg-white text-black border border-gray-300 hover:bg-gray-50 focus:ring-gray-400',
+    primary: 'bg-brand text-white shadow-brand hover:bg-[#5457EE]',
+    secondary: 'border border-border-strong bg-surface-input text-[#EDEDF0] hover:border-[#3A3A42] hover:bg-surface-raised',
+    ghost: 'bg-transparent text-[#A1A1AC] hover:bg-surface-raised hover:text-[#EDEDF0]',
   }
 
   return (

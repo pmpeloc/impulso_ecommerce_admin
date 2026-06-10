@@ -17,7 +17,8 @@ const schema = z.object({
   description: z.string().optional(),
 })
 
-export type ProductFormData = z.infer<typeof schema>
+type ProductFormInput = z.input<typeof schema>
+export type ProductFormData = z.output<typeof schema>
 
 export interface AudioData {
   blob: Blob
@@ -37,7 +38,7 @@ export function ProductForm({ onSubmit, isLoading = false }: ProductFormProps) {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<ProductFormData>({ resolver: zodResolver(schema) })
+  } = useForm<ProductFormInput, unknown, ProductFormData>({ resolver: zodResolver(schema) })
 
   const handleFormSubmit = async (data: ProductFormData) => {
     await onSubmit(data, audio ?? undefined)
@@ -51,23 +52,12 @@ export function ProductForm({ onSubmit, isLoading = false }: ProductFormProps) {
   const loading = isLoading || isSubmitting
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 p-4" noValidate>
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5 p-4 md:p-0" noValidate>
       <Input
         label="Nombre del producto"
         placeholder="ej: Almohada Premium"
         error={errors.name?.message}
         {...register('name')}
-      />
-
-      <Input
-        label="Precio"
-        type="number"
-        inputMode="decimal"
-        step="any"
-        min="0"
-        placeholder="ej: 9999"
-        error={errors.price?.message}
-        {...register('price', { valueAsNumber: true })}
       />
 
       <Input
@@ -77,14 +67,18 @@ export function ProductForm({ onSubmit, isLoading = false }: ProductFormProps) {
         {...register('description')}
       />
 
-      <div className="pt-1">
+      <div>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <p className="text-[13px] font-medium text-[#A1A1AC]">Descripción por audio</p>
+          <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-[10px] font-medium text-ai">Optimizado por IA</span>
+        </div>
         {audio ? (
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-green-600 font-medium">✓ Audio grabado</span>
+          <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm">
+            <span className="font-medium text-success">✓ Audio grabado</span>
             <button
               type="button"
               onClick={() => setAudio(null)}
-              className="text-gray-400 underline text-xs"
+              className="text-xs text-[#8A8A96] underline hover:text-[#EDEDF0]"
             >
               Quitar
             </button>
@@ -94,7 +88,7 @@ export function ProductForm({ onSubmit, isLoading = false }: ProductFormProps) {
             <button
               type="button"
               onClick={() => setShowRecorder((v) => !v)}
-              className="text-sm text-gray-500 underline"
+              className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-left text-sm text-[#A1A1AC] transition hover:border-border-strong hover:bg-surface-raised hover:text-[#EDEDF0]"
             >
               {showRecorder ? 'Cancelar grabación' : 'Agregar descripción por audio'}
             </button>
@@ -107,6 +101,18 @@ export function ProductForm({ onSubmit, isLoading = false }: ProductFormProps) {
           </>
         )}
       </div>
+
+      <Input
+        label="Precio (ARS)"
+        type="number"
+        inputMode="decimal"
+        step="any"
+        min="0"
+        placeholder="0"
+        error={errors.price?.message}
+        className="font-mono tabular-nums"
+        {...register('price', { valueAsNumber: true })}
+      />
 
       <Button type="submit" isLoading={loading}>
         Publicar producto

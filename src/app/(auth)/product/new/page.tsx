@@ -59,33 +59,56 @@ export default function NewProductPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto">
-      <div className="px-4 pt-4 pb-2">
-        <h1 className="text-xl font-bold">Nuevo producto</h1>
+    <div className="mx-auto max-w-5xl p-4 md:p-[18px]">
+      <div className="mb-5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#6B6B76]">Productos / Captura</p>
+        <h1 className="mt-1 text-xl font-bold tracking-[-0.02em] md:text-2xl">Nuevo producto</h1>
+        <p className="mt-1 text-sm text-[#8A8A96]">Capturá la foto y completá los datos para iniciar el procesamiento.</p>
       </div>
 
-      {step === 'capturing' && (
-        <CameraCapture onCapture={handleCapture} previewUrl={previewUrl} />
-      )}
+      <div className="rounded-xl border border-border bg-surface p-0 shadow-panel md:p-6">
+        {step === 'capturing' && (
+          <CameraCapture onCapture={handleCapture} previewUrl={previewUrl} />
+        )}
 
-      {step === 'previewing' && previewUrl && (
-        <ImagePreview
-          previewUrl={previewUrl}
-          onRetake={handleRetake}
-          onConfirm={handleConfirm}
-        />
-      )}
+        {step === 'previewing' && previewUrl && (
+          <ImagePreview
+            previewUrl={previewUrl}
+            onRetake={handleRetake}
+            onConfirm={handleConfirm}
+          />
+        )}
 
-      {step === 'filling' && (
-        <>
-          {apiError && (
-            <div className="mx-4 mb-2 p-3 bg-red-50 border border-red-200 rounded-xl">
-              <p className="text-sm text-red-600">{apiError}</p>
+        {step === 'filling' && (
+          <div className="flex flex-col gap-6 md:flex-row md:items-start">
+            <div className="min-w-0 flex-1">
+              {apiError && (
+                <div className="mx-4 mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 md:mx-0 md:mt-0">
+                  <p className="text-sm text-error">{apiError}</p>
+                </div>
+              )}
+              <ProductForm onSubmit={handleSubmit} isLoading={isSubmitting} />
             </div>
-          )}
-          <ProductForm onSubmit={handleSubmit} isLoading={isSubmitting} />
-        </>
-      )}
+            {previewUrl && (
+              <aside className="px-4 pb-4 md:sticky md:top-[18px] md:w-72 md:px-0 md:pb-0">
+                <p className="mb-2 text-[13px] font-medium text-[#A1A1AC]">Vista previa</p>
+                <div className="overflow-hidden rounded-[20px] border border-border bg-[#0A0A0B]">
+                  <img src={previewUrl} alt="Vista previa del producto" className="aspect-square w-full object-cover" />
+                  <div className="space-y-3 p-4">
+                    <div className="h-3 w-3/4 rounded bg-surface-input" />
+                    <div className="h-4 w-2/5 rounded bg-surface-input" />
+                    <div className="border-t border-border pt-3">
+                      <div className="h-2 w-full rounded bg-surface-input" />
+                      <div className="mt-2 h-2 w-2/3 rounded bg-surface-input" />
+                    </div>
+                  </div>
+                </div>
+                <p className="mt-2 text-center text-xs text-[#8A8A96]">Así se va a ver al publicar</p>
+              </aside>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

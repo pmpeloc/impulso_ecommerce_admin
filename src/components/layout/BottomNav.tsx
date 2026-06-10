@@ -38,7 +38,7 @@ export function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex safe-area-pb">
+    <nav className="safe-area-pb fixed bottom-0 left-0 right-0 z-30 flex border-t border-border bg-[#0A0A0BCC] backdrop-blur-xl md:hidden">
       {navItems.map(({ href, label, icon, match }) => {
         const active = match(pathname)
         return (
@@ -46,8 +46,8 @@ export function BottomNav() {
             key={href}
             href={href}
             aria-current={active ? 'page' : undefined}
-            className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 text-xs transition-colors ${
-              active ? 'text-black' : 'text-gray-400 hover:text-gray-600'
+            className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-xs transition-colors ${
+              active ? 'text-brand' : 'text-[#6B6B76] hover:text-[#A1A1AC]'
             }`}
           >
             {icon}

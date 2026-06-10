@@ -19,10 +19,10 @@ export function AudioRecorder({ onRecorded }: AudioRecorderProps) {
 
   if (state === 'recording') {
     return (
-      <div className="flex flex-col items-center gap-4 p-4">
-        <div className="flex items-center gap-3">
-          <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" aria-hidden="true" />
-          <span className="text-2xl font-mono font-semibold tabular-nums">
+      <div className="flex flex-col gap-4 rounded-xl border border-purple-500/30 bg-purple-500/10 p-4">
+        <div className="flex items-center justify-center gap-3">
+          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-ai" aria-hidden="true" />
+          <span className="font-mono text-xl font-semibold tabular-nums text-[#EDEDF0]">
             {formatTime(seconds)}
           </span>
         </div>
@@ -35,9 +35,9 @@ export function AudioRecorder({ onRecorded }: AudioRecorderProps) {
 
   if (state === 'recorded' && audioUrl) {
     return (
-      <div className="flex flex-col gap-4 p-4">
-        <audio src={audioUrl} controls className="w-full" />
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4">
+        <audio src={audioUrl} controls className="w-full accent-brand" />
+        <div className="flex flex-col gap-2 sm:flex-row">
           <Button
             onClick={() => { if (blob) onRecorded(blob, mimeType) }}
           >
@@ -52,10 +52,10 @@ export function AudioRecorder({ onRecorded }: AudioRecorderProps) {
   }
 
   return (
-    <div className="p-4">
+    <div className="rounded-xl border border-border bg-surface p-3">
       <Button onClick={startRecording} variant="secondary" className="w-full">
         <span className="flex items-center justify-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-red-500" aria-hidden="true" />
+          <span className="h-2.5 w-2.5 rounded-full bg-brand" aria-hidden="true" />
           Grabar descripción
         </span>
       </Button>

@@ -22,3 +22,36 @@
 [DONE] pipeline-status
 [DONE] product-detail-page
 [DONE] pwa-manifest-icons
+
+## Rediseño Hi-Fi (Claude Design)
+
+> Completado: 2026-06-10
+
+[DONE] src/app/globals.css — tokens dark + indigo, Inter/JetBrains Mono, accesibilidad de movimiento y utilidades globales
+[DONE] tailwind.config.ts — colores semánticos y sombras del design system Prodcast
+[DONE] public/logo-mark.svg — logo oficial del handoff incorporado como asset local
+[DONE] src/app/layout.tsx — theme color y canvas global oscuro
+[DONE] src/app/login/page.tsx — card hi-fi, glow ambiental y contraste correcto en inputs
+[DONE] src/app/(auth)/layout.tsx — shell responsive desktop/mobile conservando `pb-20`
+[DONE] src/components/layout/Header.tsx — header mobile y sidebar desktop equivalentes a `AppShellDesk`
+[DONE] src/components/layout/BottomNav.tsx — navegación mobile translúcida dark
+[DONE] src/components/ui/Button.tsx — variantes primary/secondary/ghost del design system
+[DONE] src/components/ui/Input.tsx — inputs dark con foco indigo y errores accesibles
+[DONE] src/app/(auth)/dashboard/page.tsx — toolbar visual, empty/error/loading states, tabla desktop y FAB mobile
+[DONE] src/components/product/ProductCard.tsx — fila desktop/card mobile con precio mono, ID y status badge
+[DONE] src/app/(auth)/product/new/page.tsx — captura responsive y split formulario/foto preview
+[DONE] src/components/camera/CameraCapture.tsx — dropzone/captura hi-fi
+[DONE] src/components/camera/ImagePreview.tsx — preview oscuro y acciones responsive
+[DONE] src/components/audio/AudioRecorder.tsx — recorder dark con estados idle/recording/recorded
+[DONE] src/components/product/ProductForm.tsx — formulario hi-fi, badge IA y tipado Zod/RHF compatible con build
+[DONE] src/app/(auth)/product/[id]/page.tsx — detalle responsive con imagen optimizada, descripción y pipeline
+[DONE] src/components/product/PipelineStatus.tsx — procesamiento y publicación solo en WhatsApp/Facebook/Mercado Libre
+[DONE] verificación — 176 tests unitarios pasan y `next build` completa correctamente
+
+## Pendiente
+
+[PENDING] Dashboard — búsqueda, filtros por estado/canal, selección en lote y canales por fila requieren estado/acciones que no existen en la implementación actual.
+[PENDING] Captura — preview textual en vivo y “Guardar borrador” requieren compartir estado del formulario y/o endpoint específico.
+[PENDING] Detalle/edición — edición, SKU, reprocesar, cambiar foto, guardar cambios y publicar manualmente requieren campos/endpoints no disponibles.
+[PENDING] Pipeline — reintento por job o por canal requiere endpoints/acciones nuevas; ecommerce permanece excluido de la UI por decisión de producto.
+[PENDING] Tests — `npm test` también recoge por configuración los specs Playwright de `e2e/`; fallan fuera de su runner y sin credenciales Supabase. La suite unitaria `vitest run src` pasa completa.
