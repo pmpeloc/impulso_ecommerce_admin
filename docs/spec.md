@@ -63,6 +63,9 @@ Construir la PWA completa que permite al fabricante capturar y publicar producto
 - Login → guarda `token` y `refreshToken` en `localStorage`
 - Middleware de Next.js usa una cookie `session` (valor: `"1"`) que se setea desde el cliente al hacer login, para que el middleware detecte si hay sesión activa
 - El token JWT real viaja solo desde el cliente en los headers de la API
+- Ante un `401` de un endpoint protegido, el cliente usa `POST /api/v1/auth/refresh`, guarda los tokens rotados y reintenta la request una sola vez
+- Requests concurrentes con token vencido comparten una única operación de refresh
+- Si falta el refresh token o Supabase lo rechaza, se limpian tokens/cookie y el usuario vuelve a `/login`
 
 ### Estado global (Zustand)
 
@@ -79,6 +82,7 @@ interface AuthStore {
 
 - Base URL desde `NEXT_PUBLIC_API_URL`
 - JWT desde store de Zustand en cada request
+- Refresh token automático y centralizado ante `401`, sin duplicar lógica en hooks/SWR
 - Errores tipados con `ApiError`
 - Nunca usar `fetch` directamente fuera de este módulo
 

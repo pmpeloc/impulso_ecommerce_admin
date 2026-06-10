@@ -1,4 +1,11 @@
-import { apiGet, apiPost, ApiClientError, TOKEN_KEY } from '@/lib/api'
+import {
+  apiGet,
+  apiPost,
+  ApiClientError,
+  REFRESH_TOKEN_KEY,
+  SESSION_EXPIRED_EVENT,
+  TOKEN_KEY,
+} from '@/lib/api'
 
 describe('api client', () => {
   const mockFetch = vi.fn()
@@ -98,6 +105,195 @@ describe('api client', () => {
       mockFetch.mockRejectedValue(new TypeError('Failed to fetch'))
 
       await expect(apiGet('/api/v1/products')).rejects.toThrow()
+    })
+  })
+
+  describe('refresh de sesión', () => {
+    it('refresca el token y reintenta una vez ante un 401', async () => {
+      localStorage.setItem(TOKEN_KEY, 'expired-token')
+      localStorage.setItem(REFRESH_TOKEN_KEY, 'old-refresh')
+
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 401,
+          json: async () => ({
+            error: { code: 'UNAUTHORIZED', message: 'Token vencido', statusCode: 401 },
+          }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({ token: 'new-token', refreshToken: 'new-refresh' }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({ products: [] }),
+        })
+
+      await expect(apiGet('/api/v1/products')).resolves.toEqual({ products: [] })
+
+      expect(mockFetch).toHaveBeenCalledTimes(3)
+      expect(mockFetch.mock.calls[1][0]).toBe('http://localhost:3001/api/v1/auth/refresh')
+      expect(mockFetch.mock.calls[2][1].headers.Authorization).toBe('Bearer new-token')
+      expect(localStorage.getItem(TOKEN_KEY)).toBe('new-token')
+      expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBe('new-refresh')
+    })
+
+    it('conserva el refresh token anterior si la API todavía no devuelve uno rotado', async () => {
+      localStorage.setItem(TOKEN_KEY, 'expired-token')
+      localStorage.setItem(REFRESH_TOKEN_KEY, 'old-refresh')
+
+      mockFetch
+        .mockResolvedValueOnce({ ok: false, status: 401, json: async () => ({ error: {} }) })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({ token: 'new-token' }),
+        })
+        .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({}) })
+
+      await apiGet('/api/v1/products')
+
+      expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBe('old-refresh')
+    })
+
+    it('usa un solo refresh para requests concurrentes con 401', async () => {
+      localStorage.setItem(TOKEN_KEY, 'expired-token')
+      localStorage.setItem(REFRESH_TOKEN_KEY, 'old-refresh')
+      let refreshCalls = 0
+
+      mockFetch.mockImplementation(async (url: string, options: RequestInit) => {
+        if (url.endsWith('/api/v1/auth/refresh')) {
+          refreshCalls += 1
+          await Promise.resolve()
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({ token: 'new-token', refreshToken: 'new-refresh' }),
+          }
+        }
+
+        const authorization = (options.headers as Record<string, string>).Authorization
+        if (authorization === 'Bearer expired-token') {
+          return {
+            ok: false,
+            status: 401,
+            json: async () => ({
+              error: { code: 'UNAUTHORIZED', message: 'Token vencido', statusCode: 401 },
+            }),
+          }
+        }
+
+        return { ok: true, status: 200, json: async () => ({ ok: true }) }
+      })
+
+      await Promise.all([
+        apiGet('/api/v1/products'),
+        apiGet('/api/v1/products/1/pipeline'),
+      ])
+
+      expect(refreshCalls).toBe(1)
+    })
+
+    it('reutiliza un token ya renovado si un 401 anterior llega tarde', async () => {
+      localStorage.setItem(TOKEN_KEY, 'expired-token')
+      localStorage.setItem(REFRESH_TOKEN_KEY, 'old-refresh')
+      let resolveLateUnauthorized: ((value: unknown) => void) | undefined
+      const lateUnauthorized = new Promise((resolve) => {
+        resolveLateUnauthorized = resolve
+      })
+      let oldTokenCalls = 0
+      let refreshCalls = 0
+
+      mockFetch.mockImplementation(async (url: string, options: RequestInit) => {
+        if (url.endsWith('/api/v1/auth/refresh')) {
+          refreshCalls += 1
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({ token: 'new-token', refreshToken: 'new-refresh' }),
+          }
+        }
+
+        const authorization = (options.headers as Record<string, string>).Authorization
+        if (authorization === 'Bearer expired-token') {
+          oldTokenCalls += 1
+          if (oldTokenCalls === 2) return lateUnauthorized
+          return {
+            ok: false,
+            status: 401,
+            json: async () => ({
+              error: { code: 'UNAUTHORIZED', message: 'Token vencido', statusCode: 401 },
+            }),
+          }
+        }
+
+        return { ok: true, status: 200, json: async () => ({ ok: true }) }
+      })
+
+      const firstRequest = apiGet('/api/v1/products')
+      const lateRequest = apiGet('/api/v1/products/1/pipeline')
+
+      await firstRequest
+      resolveLateUnauthorized?.({
+        ok: false,
+        status: 401,
+        json: async () => ({
+          error: { code: 'UNAUTHORIZED', message: 'Token vencido', statusCode: 401 },
+        }),
+      })
+      await lateRequest
+
+      expect(refreshCalls).toBe(1)
+    })
+
+    it('limpia la sesión y emite evento cuando el refresh token es inválido', async () => {
+      localStorage.setItem(TOKEN_KEY, 'expired-token')
+      localStorage.setItem(REFRESH_TOKEN_KEY, 'invalid-refresh')
+      const onExpired = vi.fn()
+      window.addEventListener(SESSION_EXPIRED_EVENT, onExpired)
+
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 401,
+          json: async () => ({
+            error: { code: 'UNAUTHORIZED', message: 'Token vencido', statusCode: 401 },
+          }),
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 401,
+          json: async () => ({
+            error: { code: 'UNAUTHORIZED', message: 'Refresh inválido', statusCode: 401 },
+          }),
+        })
+
+      await expect(apiGet('/api/v1/products')).rejects.toBeInstanceOf(ApiClientError)
+
+      expect(localStorage.getItem(TOKEN_KEY)).toBeNull()
+      expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBeNull()
+      expect(onExpired).toHaveBeenCalledTimes(1)
+      window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired)
+    })
+
+    it('no intenta refresh para un 401 del login', async () => {
+      localStorage.setItem(REFRESH_TOKEN_KEY, 'stored-refresh')
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 401,
+        json: async () => ({
+          error: { code: 'INVALID_CREDENTIALS', message: 'Credenciales inválidas', statusCode: 401 },
+        }),
+      })
+
+      await expect(
+        apiPost('/api/v1/auth/login', { email: 'a@b.com', password: 'bad' }),
+      ).rejects.toBeInstanceOf(ApiClientError)
+
+      expect(mockFetch).toHaveBeenCalledTimes(1)
     })
   })
 

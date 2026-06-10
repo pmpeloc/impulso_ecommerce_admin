@@ -88,3 +88,17 @@
 [DONE] public/manifest.json — theme/background alineados al canvas dark `#0A0A0B`
 [DONE] src/app/layout.tsx — metadata explícita para favicon, shortcut y Apple touch icon
 [DONE] src/test/manifest.test.ts — cobertura de existencia, referencias y firma PNG de los nuevos assets
+
+## Auth — Refresh Token
+
+> Completado: 2026-06-10
+
+[DONE] src/lib/api.ts — refresh automático centralizado ante `401` y reintento único de la request original
+[DONE] src/lib/api.ts — single-flight para compartir un solo refresh entre requests concurrentes
+[DONE] src/lib/api.ts — persistencia del access token y refresh token rotados
+[DONE] src/lib/api.ts — limpieza de localStorage/cookie y evento de sesión expirada cuando el refresh falla
+[DONE] src/app/(auth)/layout.tsx — sincroniza token refrescado y redirige a `/login` al expirar la sesión
+[DONE] src/types/auth.ts — contrato `RefreshResponse`
+[DONE] src/lib/api.test.ts — cobertura de refresh, concurrencia, rotación, compatibilidad y sesión inválida
+[DONE] src/app/(auth)/layout.test.tsx — cobertura de logout/redirección por sesión expirada
+[DONE] verificación — 187 tests frontend pasan y `next build` finaliza correctamente

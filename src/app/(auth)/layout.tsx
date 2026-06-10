@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
+import { SESSION_EXPIRED_EVENT, TOKEN_REFRESHED_EVENT } from '@/lib/api'
 import { Header } from '@/components/layout/Header'
 import { BottomNav } from '@/components/layout/BottomNav'
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  const { token } = useAuth()
+  const { token, logout, hydrate } = useAuth()
   const router = useRouter()
   // Track whether the client-side hydration from localStorage has completed.
   // useAuth's hydrate() runs in a useEffect registered BEFORE this one, so by the
@@ -19,6 +20,22 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     setIsHydrated(true)
   }, [])
+
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      logout()
+      router.replace('/login')
+    }
+    const handleTokenRefreshed = () => hydrate()
+
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired)
+    window.addEventListener(TOKEN_REFRESHED_EVENT, handleTokenRefreshed)
+
+    return () => {
+      window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired)
+      window.removeEventListener(TOKEN_REFRESHED_EVENT, handleTokenRefreshed)
+    }
+  }, [hydrate, logout, router])
 
   useEffect(() => {
     if (isHydrated && token === null) {

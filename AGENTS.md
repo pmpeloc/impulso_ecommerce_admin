@@ -139,3 +139,9 @@ interface PipelineStatusResponse {
 ## Estado actual — Branding PWA
 
 **Implementado 2026-06-10:** favicon multirresolución e iconos PWA/Apple derivados del isotipo oficial Prodcast (indigo + “P” blanca + punto violeta). `scripts/generate-icons.mjs` permite regenerarlos sin dependencias externas.
+
+## Estado actual — Refresh de sesión
+
+**Implementado 2026-06-10:** el cliente HTTP intercepta `401` de endpoints protegidos, ejecuta un único refresh compartido mediante `POST /api/v1/auth/refresh`, persiste los tokens rotados y reintenta la request una vez. Si el refresh no existe o falla, limpia tokens/cookie y redirige a `/login`.
+
+**Verificación:** 187 tests frontend pasan y `next build` finaliza correctamente.
