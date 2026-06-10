@@ -135,3 +135,7 @@ interface PipelineStatusResponse {
 **Fix implementado 2026-06-10:** Next/Vercel excluye `e2e/` del type-check y Vitest excluye los specs Playwright de su discovery. Todas las imágenes del rediseño usan `next/image`; previews blob y URLs dinámicas usan `unoptimized` para no depender de dominios remotos configurados.
 
 **Verificación vigente:** 176 tests unitarios pasan y `next build` finaliza sin warnings `@next/next/no-img-element` ni errores por `@playwright/test`.
+
+## Estado actual — Branding PWA
+
+**Implementado 2026-06-10:** favicon multirresolución e iconos PWA/Apple derivados del isotipo oficial Prodcast (indigo + “P” blanca + punto violeta). `scripts/generate-icons.mjs` permite regenerarlos sin dependencias externas.

@@ -5,9 +5,14 @@ export const metadata: Metadata = {
   title: "Prodcast",
   description: "Capturá y publicá tus productos desde el celular",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "Prodcast",
   },
 };

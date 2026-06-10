@@ -75,3 +75,16 @@
 ### Deuda resuelta
 
 [DONE] Tests — Vitest ya no recoge `e2e/**/*.spec.ts`; la suite E2E continúa aislada en `e2e/`.
+
+## Branding — Favicon Prodcast
+
+> Completado: 2026-06-10
+
+[DONE] scripts/generate-icons.mjs — genera el isotipo Prodcast con antialiasing, favicon ICO multirresolución e iconos PWA sin dependencias externas
+[DONE] src/app/favicon.ico — favicon Prodcast en tamaños 16x16, 32x32 y 48x48
+[DONE] public/apple-touch-icon.png — icono Apple de 180x180
+[DONE] public/icons/icon-192x192.png — icono PWA Prodcast
+[DONE] public/icons/icon-512x512.png — icono PWA Prodcast
+[DONE] public/manifest.json — theme/background alineados al canvas dark `#0A0A0B`
+[DONE] src/app/layout.tsx — metadata explícita para favicon, shortcut y Apple touch icon
+[DONE] src/test/manifest.test.ts — cobertura de existencia, referencias y firma PNG de los nuevos assets

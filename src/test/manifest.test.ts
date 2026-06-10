@@ -47,6 +47,14 @@ describe('PWA Manifest', () => {
 })
 
 describe('PWA Icons (archivos)', () => {
+  it('existe el favicon de Prodcast', () => {
+    expect(existsSync(join(process.cwd(), 'src', 'app', 'favicon.ico'))).toBe(true)
+  })
+
+  it('existe el Apple touch icon', () => {
+    expect(existsSync(join(PUBLIC_DIR, 'apple-touch-icon.png'))).toBe(true)
+  })
+
   it('existe el archivo icon-192x192.png', () => {
     expect(existsSync(join(PUBLIC_DIR, 'icons', 'icon-192x192.png'))).toBe(true)
   })
@@ -71,6 +79,14 @@ describe('PWA Icons (archivos)', () => {
     expect(file[2]).toBe(78)
     expect(file[3]).toBe(71)
   })
+
+  it('apple-touch-icon.png es un PNG válido', () => {
+    const file = readFileSync(join(PUBLIC_DIR, 'apple-touch-icon.png'))
+    expect(file[0]).toBe(137)
+    expect(file[1]).toBe(80)
+    expect(file[2]).toBe(78)
+    expect(file[3]).toBe(71)
+  })
 })
 
 describe('layout.tsx — meta tags PWA', () => {
@@ -79,6 +95,11 @@ describe('layout.tsx — meta tags PWA', () => {
 
   it('referencia el manifest.json', () => {
     expect(layout).toContain('manifest')
+  })
+
+  it('referencia favicon y Apple touch icon', () => {
+    expect(layout).toContain('/favicon.ico')
+    expect(layout).toContain('/apple-touch-icon.png')
   })
 
   it('tiene meta tag para Apple Web App', () => {
