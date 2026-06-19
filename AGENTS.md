@@ -6,6 +6,16 @@
 
 PWA (Next.js 14 App Router + TypeScript strict + Tailwind) para que el equipo de Red Impulso capture productos: foto, nombre, descripción (audio→texto), precio. El sistema procesa con AI y publica en múltiples canales (WhatsApp, Facebook, Mercado Libre, ecommerce propio).
 
+## Convención de Naming (OBLIGATORIO, global a todos los repos)
+
+1. **Carpetas, archivos, componentes, funciones, variables, tipos** → siempre en inglés.
+2. **Comentarios** → siempre en español.
+3. **Excepción:** carpetas de rutas visibles en la URL (Next.js App Router) se quedan en español tal cual. Las funciones de página dentro de esas carpetas sí van en inglés (ej: `app/cuenta/page.tsx` exporta `AccountPage`, no `CuentaPage`).
+4. **Copy visible al usuario** (textos de UI, labels, mensajes, `aria-label`) no es código — se mantiene en español sin restricción.
+5. **Excepción de contrato API:** no traducir campos que espejan a propósito un contrato externo en snake_case — ver `Product` en `src/types/product.ts` (viene de Supabase sin transformar).
+
+Si el rediseño visual toca nombres de componentes/archivos en español, aplicar esta convención al renombrarlos.
+
 ## Stack (no cambiar versiones)
 
 - Next.js 14+ App Router
