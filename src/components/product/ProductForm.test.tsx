@@ -19,10 +19,11 @@ describe('ProductForm', () => {
 
   beforeEach(() => onSubmit.mockReset())
 
-  it('renderiza campos nombre, precio y descripción', () => {
+  it('renderiza campos nombre, precio, cantidad y descripción', () => {
     render(<ProductForm onSubmit={onSubmit} />)
     expect(screen.getByLabelText(/nombre/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/precio/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/cantidad/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/descripción/i)).toBeInTheDocument()
   })
 
@@ -65,11 +66,12 @@ describe('ProductForm', () => {
 
     await user.type(screen.getByLabelText(/nombre/i), 'Almohada')
     await user.type(screen.getByLabelText(/precio/i), '9999')
+    await user.type(screen.getByLabelText(/cantidad/i), '5')
     await user.click(screen.getByRole('button', { name: /publicar/i }))
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'Almohada', price: 9999 }),
+        expect.objectContaining({ name: 'Almohada', price: 9999, stock: 5 }),
         undefined,
       )
     })
@@ -82,12 +84,13 @@ describe('ProductForm', () => {
 
     await user.type(screen.getByLabelText(/nombre/i), 'Almohada Premium')
     await user.type(screen.getByLabelText(/precio/i), '15000')
+    await user.type(screen.getByLabelText(/cantidad/i), '8')
     await user.type(screen.getByLabelText(/descripción/i), 'Muy cómoda')
     await user.click(screen.getByRole('button', { name: /publicar/i }))
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
-        { name: 'Almohada Premium', price: 15000, description: 'Muy cómoda' },
+        { name: 'Almohada Premium', price: 15000, stock: 8, description: 'Muy cómoda' },
         undefined,
       )
     })
@@ -122,11 +125,12 @@ describe('ProductForm', () => {
 
     await user.type(screen.getByLabelText(/nombre/i), 'Almohada')
     await user.type(screen.getByLabelText(/precio/i), '9999')
+    await user.type(screen.getByLabelText(/cantidad/i), '3')
     await user.click(screen.getByRole('button', { name: /publicar/i }))
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'Almohada', price: 9999 }),
+        expect.objectContaining({ name: 'Almohada', price: 9999, stock: 3 }),
         expect.objectContaining({ mimeType: 'audio/webm' }),
       )
     })

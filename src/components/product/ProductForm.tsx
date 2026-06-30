@@ -14,6 +14,10 @@ const schema = z.object({
     (v) => (typeof v === 'number' && isNaN(v) ? 0 : v),
     z.number().positive('El precio debe ser mayor a 0'),
   ),
+  stock: z.preprocess(
+    (v) => (typeof v === 'number' && isNaN(v) ? -1 : v),
+    z.number().int().min(0, 'La cantidad debe ser 0 o mayor'),
+  ),
   description: z.string().optional(),
 })
 
@@ -112,6 +116,18 @@ export function ProductForm({ onSubmit, isLoading = false }: ProductFormProps) {
         error={errors.price?.message}
         className="font-mono tabular-nums"
         {...register('price', { valueAsNumber: true })}
+      />
+
+      <Input
+        label="Cantidad disponible"
+        type="number"
+        inputMode="numeric"
+        step="1"
+        min="0"
+        placeholder="ej: 10"
+        error={errors.stock?.message}
+        className="font-mono tabular-nums"
+        {...register('stock', { valueAsNumber: true })}
       />
 
       <Button type="submit" isLoading={loading}>

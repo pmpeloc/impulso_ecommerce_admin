@@ -42,6 +42,7 @@ export default function NewProductPage() {
       const formData = new FormData()
       formData.append('name', data.name)
       formData.append('price', String(data.price))
+      formData.append('stock', String(data.stock))
       if (data.description) formData.append('description', data.description)
       formData.append('image', imageFile, imageFile.name)
       if (audio) {
