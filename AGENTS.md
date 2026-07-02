@@ -1,8 +1,8 @@
-# AGENTS.md — Prodcast App (contexto para Codex)
+# AGENTS.md — Impulso Ecommerce Admin (contexto para Codex)
 
 > Este archivo es el equivalente a `CLAUDE.md` (usado por Claude) pero para agentes Codex/OpenAI. Resume lo esencial del proyecto para aplicar el rediseño visual generado en Claude Design sin romper la lógica existente.
 
-## Qué es Prodcast
+## Qué es Impulso Ecommerce Admin
 
 PWA (Next.js 14 App Router + TypeScript strict + Tailwind) para que el equipo de Red Impulso capture productos: foto, nombre, descripción (audio→texto), precio. El sistema procesa con AI y publica en múltiples canales (WhatsApp, Facebook, Mercado Libre, ecommerce propio).
 
@@ -148,7 +148,7 @@ interface PipelineStatusResponse {
 
 ## Estado actual — Branding PWA
 
-**Implementado 2026-06-10:** favicon multirresolución e iconos PWA/Apple derivados del isotipo oficial Prodcast (indigo + “P” blanca + punto violeta). `scripts/generate-icons.mjs` permite regenerarlos sin dependencias externas.
+**Implementado 2026-06-10:** favicon multirresolución e iconos PWA/Apple derivados del isotipo heredado de "Prodcast" (nombre anterior, pendiente de rediseño) (indigo + “P” blanca + punto violeta). `scripts/generate-icons.mjs` permite regenerarlos sin dependencias externas.
 
 ## Estado actual — Refresh de sesión
 

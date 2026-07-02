@@ -51,14 +51,14 @@ export default function LoginPage() {
         <div className="mb-6 flex flex-col items-center gap-3.5 text-center">
           <Image
             src="/logo-mark.svg"
-            alt="Prodcast"
+            alt="Impulso Ecommerce Admin"
             width={54}
             height={54}
             priority
             className="rounded-[14px] shadow-brand"
           />
           <div>
-            <h1 className="text-[26px] font-bold tracking-[-0.02em] text-[#EDEDF0]">Prodcast</h1>
+            <h1 className="text-[26px] font-bold tracking-[-0.02em] text-[#EDEDF0]">Impulso Ecommerce Admin</h1>
             <p className="mt-1.5 text-sm text-[#8A8A96]">Iniciá sesión para continuar</p>
           </div>
         </div>

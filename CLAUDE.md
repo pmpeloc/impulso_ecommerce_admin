@@ -1,4 +1,4 @@
-# Prodcast App — Frontend
+# Impulso Ecommerce Admin — Frontend
 
 > Leer también: `../CLAUDE.md` para contexto global del proyecto y `AGENTS.md` (raíz de este repo) si trabajás con Codex.
 
@@ -64,7 +64,7 @@ Tokens definidos en `src/app/globals.css` y `tailwind.config.ts`. Logo oficial e
 ## Estructura de Carpetas
 
 ```
-prodcast_app/
+impulso_ecommerce_admin/
 ├── src/
 │   ├── app/
 │   │   ├── (auth)/                    # Rutas protegidas — layout con pb-20 para BottomNav fijo
@@ -240,7 +240,7 @@ interface ProductsResponse {
 ```
 
 > **Convención en UI:** mostrar `description_optimized` si existe, con fallback a `description_transcription`. Nunca mostrar null al usuario.
-> **Nota:** `slug` existe en la DB pero no es parte del contrato con la PWA — la app navega por `id`. El slug solo importa al storefront.
+> **Nota:** `slug` existe en la DB pero no es parte del contrato con la PWA — la app navega por `id`. El slug solo importa al impulso_ecommerce_app.
 
 ### `src/types/auth.ts`
 ```typescript
@@ -443,7 +443,7 @@ Testear importando la función directamente con mocks de `NextRequest`/`NextResp
 ```bash
 # .env.local.example
 NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_APP_NAME=Prodcast
+NEXT_PUBLIC_APP_NAME=Impulso Ecommerce Admin
 ```
 
 ---

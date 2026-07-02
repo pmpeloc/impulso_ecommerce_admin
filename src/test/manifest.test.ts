@@ -7,8 +7,8 @@ describe('PWA Manifest', () => {
   const manifest = JSON.parse(readFileSync(join(PUBLIC_DIR, 'manifest.json'), 'utf-8'))
 
   it('tiene el nombre correcto de la app', () => {
-    expect(manifest.name).toBe('Prodcast')
-    expect(manifest.short_name).toBe('Prodcast')
+    expect(manifest.name).toBe('Impulso Ecommerce Admin')
+    expect(manifest.short_name).toBe('Impulso Admin')
   })
 
   it('tiene display standalone (obligatorio para PWA instalable)', () => {
@@ -47,7 +47,7 @@ describe('PWA Manifest', () => {
 })
 
 describe('PWA Icons (archivos)', () => {
-  it('existe el favicon de Prodcast', () => {
+  it('existe el favicon de Impulso Ecommerce Admin', () => {
     expect(existsSync(join(process.cwd(), 'src', 'app', 'favicon.ico'))).toBe(true)
   })
 

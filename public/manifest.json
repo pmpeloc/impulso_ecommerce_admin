@@ -1,7 +1,7 @@
 {
-  "name": "Prodcast",
-  "short_name": "Prodcast",
-  "description": "Capturá y publicá tus productos desde el celular",
+  "name": "Impulso Ecommerce Admin",
+  "short_name": "Impulso Admin",
+  "description": "Gestioná productos, accesos y ventas de tu negocio desde el celular",
   "display": "standalone",
   "orientation": "portrait",
   "start_url": "/dashboard",

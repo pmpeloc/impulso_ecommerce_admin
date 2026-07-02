@@ -1,8 +1,8 @@
-# Prodcast Frontend — Spec Sprint 1 (MVP)
+# Impulso Ecommerce Admin Frontend — Spec Sprint 1 (MVP)
 
 ## Objetivo
 
-Construir la PWA completa que permite al fabricante capturar y publicar productos desde su celular. El sistema se conecta a `prodcast_api` corriendo en `http://localhost:3001` (producción: variable de entorno `NEXT_PUBLIC_API_URL`).
+Construir la PWA completa que permite al fabricante capturar y publicar productos desde su celular. El sistema se conecta a `impulso_ecommerce_api` corriendo en `http://localhost:3001` (producción: variable de entorno `NEXT_PUBLIC_API_URL`).
 
 ---
 
@@ -156,7 +156,7 @@ useSWR(url, fetcher, { refreshInterval: shouldPoll ? 2000 : 0 })
 
 ---
 
-## Tipos de la API (alineados con prodcast_api)
+## Tipos de la API (alineados con impulso_ecommerce_api)
 
 ### `src/types/auth.ts`
 ```typescript
@@ -251,7 +251,7 @@ interface ApiError {
 ```bash
 # .env.local
 NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_APP_NAME=Prodcast
+NEXT_PUBLIC_APP_NAME=Impulso Ecommerce Admin
 ```
 
 ---

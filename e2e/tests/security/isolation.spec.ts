@@ -29,7 +29,7 @@ test.describe('Security — Isolation', () => {
 
   // Rate limiting: sends 101 concurrent requests to a protected endpoint.
   // Assumption: the API has a burst rate limit that triggers before 100 req/s.
-  // If this test fails with all 200s, verify the rate limiter config in prodcast_api.
+  // If this test fails with all 200s, verify the rate limiter config in impulso_ecommerce_api.
   test('rate limiting retorna 429 después de requests masivos', async () => {
     const product = await createTestProduct('Rate Limit Test')
 

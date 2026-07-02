@@ -1,10 +1,10 @@
-# Prodcast E2E — Test Suite
+# Impulso Ecommerce Admin E2E — Test Suite
 
-> Leer también: `../CLAUDE.md` (prodcast_app) y `../../CLAUDE.md` (raíz) para contexto global del proyecto.
+> Leer también: `../CLAUDE.md` (impulso_ecommerce_admin) y `../../CLAUDE.md` (raíz) para contexto global del proyecto.
 
 ## Propósito
 
-Suite de tests end-to-end que prueba el sistema completo como caja negra: la PWA (`prodcast_app`) consumiendo la API real (`prodcast_api`). Cubre regresión, flujos críticos y aislamiento multi-tenant.
+Suite de tests end-to-end que prueba el sistema completo como caja negra: la PWA (`impulso_ecommerce_admin`) consumiendo la API real (`impulso_ecommerce_api`). Cubre regresión, flujos críticos y aislamiento multi-tenant.
 
 **Scope actual:** ejecución local únicamente. CI/CD se integrará en un sprint futuro.
 
@@ -73,7 +73,7 @@ export async function cleanupTestProducts(tenantId: string) {
 }
 ```
 
-El tenant de test en sí **no se borra** entre runs — solo sus productos y publish_logs. El tenant se crea una sola vez manualmente (igual que el proceso de onboarding documentado en `prodcast_api/CLAUDE.md`).
+El tenant de test en sí **no se borra** entre runs — solo sus productos y publish_logs. El tenant se crea una sola vez manualmente (igual que el proceso de onboarding documentado en `impulso_ecommerce_api/CLAUDE.md`).
 
 ---
 
@@ -187,8 +187,8 @@ npx playwright test --ui
 
 Antes de correr los tests por primera vez:
 
-1. Asegurarse de que `prodcast_api` y `prodcast_app` están corriendo localmente
-2. Crear el tenant de test en Supabase (ver proceso en `prodcast_api/CLAUDE.md` — deuda técnica #1)
+1. Asegurarse de que `impulso_ecommerce_api` y `impulso_ecommerce_admin` están corriendo localmente
+2. Crear el tenant de test en Supabase (ver proceso en `impulso_ecommerce_api/CLAUDE.md` — deuda técnica #1)
 3. Crear un usuario de test en Supabase Auth y vincularlo al tenant de test
 4. Copiar `.env.test.example` → `.env.test` y completar las variables
 5. Descargar/crear los fixtures de audio e imagen en `fixtures/`

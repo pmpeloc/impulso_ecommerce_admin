@@ -1,9 +1,9 @@
-# Prodcast E2E — Spec
+# Impulso Ecommerce Admin E2E — Spec
 
 ## Qué construimos
 
 Suite de tests end-to-end con Playwright + TypeScript que prueba el sistema completo como caja negra:
-la PWA (`prodcast_app` en `localhost:3000`) consumiendo la API real (`prodcast_api` en `localhost:3001`).
+la PWA (`impulso_ecommerce_admin` en `localhost:3000`) consumiendo la API real (`impulso_ecommerce_api` en `localhost:3001`).
 
 Scope actual: ejecución local. CI/CD en sprint futuro.
 
@@ -14,12 +14,12 @@ Scope actual: ejecución local. CI/CD en sprint futuro.
 ### Mecanismo de auth (doble capa)
 
 El middleware de Next.js lee la cookie `session` (Edge runtime). El cliente Zustand lee
-`localStorage.prodcast_token`. En los tests, el auth helper:
+`localStorage.impulso_ecommerce_admin_token`. En los tests, el auth helper:
 
 1. Llama `POST /api/v1/auth/login` desde Node (fetch nativo)
 2. Setea la cookie `session=1` via `context.addCookies()` — antes de cualquier navegación
 3. Navega a `/login` (página pública sin redirect) para establecer el origen
-4. Inyecta `prodcast_token` en `localStorage` via `page.evaluate()`
+4. Inyecta `impulso_ecommerce_admin_token` en `localStorage` via `page.evaluate()`
 5. A partir de ahí, el caller navega al destino protegido
 
 ### Selectores identificados (sin data-testid)
@@ -78,7 +78,7 @@ No se necesita un segundo tenant de test.
 
 El test envía 101 requests concurrentes al endpoint de pipeline y espera al menos un 429.
 **Asunción:** el API tiene un burst rate limit < 100 req/s (independiente del limit de 500/min
-documentado para el endpoint `/products`). Si el test falla, revisar la config del rate limiter en prodcast_api.
+documentado para el endpoint `/products`). Si el test falla, revisar la config del rate limiter en impulso_ecommerce_api.
 
 ### Aislamiento de datos
 

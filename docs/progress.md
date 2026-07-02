@@ -1,4 +1,4 @@
-# Prodcast Frontend — Progress Sprint 1
+# Impulso Ecommerce Admin Frontend — Progress Sprint 1
 
 > Actualizado: 2026-06-02
 
@@ -28,7 +28,7 @@
 > Completado: 2026-06-10
 
 [DONE] src/app/globals.css — tokens dark + indigo, Inter/JetBrains Mono, accesibilidad de movimiento y utilidades globales
-[DONE] tailwind.config.ts — colores semánticos y sombras del design system Prodcast
+[DONE] tailwind.config.ts — colores semánticos y sombras del design system Impulso Ecommerce Admin
 [DONE] public/logo-mark.svg — logo oficial del handoff incorporado como asset local
 [DONE] src/app/layout.tsx — theme color y canvas global oscuro
 [DONE] src/app/login/page.tsx — card hi-fi, glow ambiental y contraste correcto en inputs
@@ -76,15 +76,15 @@
 
 [DONE] Tests — Vitest ya no recoge `e2e/**/*.spec.ts`; la suite E2E continúa aislada en `e2e/`.
 
-## Branding — Favicon Prodcast
+## Branding — Favicon Impulso Ecommerce Admin
 
 > Completado: 2026-06-10
 
-[DONE] scripts/generate-icons.mjs — genera el isotipo Prodcast con antialiasing, favicon ICO multirresolución e iconos PWA sin dependencias externas
-[DONE] src/app/favicon.ico — favicon Prodcast en tamaños 16x16, 32x32 y 48x48
+[DONE] scripts/generate-icons.mjs — genera el isotipo Impulso Ecommerce Admin con antialiasing, favicon ICO multirresolución e iconos PWA sin dependencias externas
+[DONE] src/app/favicon.ico — favicon Impulso Ecommerce Admin en tamaños 16x16, 32x32 y 48x48
 [DONE] public/apple-touch-icon.png — icono Apple de 180x180
-[DONE] public/icons/icon-192x192.png — icono PWA Prodcast
-[DONE] public/icons/icon-512x512.png — icono PWA Prodcast
+[DONE] public/icons/icon-192x192.png — icono PWA Impulso Ecommerce Admin
+[DONE] public/icons/icon-512x512.png — icono PWA Impulso Ecommerce Admin
 [DONE] public/manifest.json — theme/background alineados al canvas dark `#0A0A0B`
 [DONE] src/app/layout.tsx — metadata explícita para favicon, shortcut y Apple touch icon
 [DONE] src/test/manifest.test.ts — cobertura de existencia, referencias y firma PNG de los nuevos assets

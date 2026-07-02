@@ -1,4 +1,4 @@
-# Prodcast E2E — Plan de Implementación
+# Impulso Ecommerce Admin E2E — Plan de Implementación
 
 ## [DONE] scaffold-package-json
 - Archivo: `e2e/package.json`

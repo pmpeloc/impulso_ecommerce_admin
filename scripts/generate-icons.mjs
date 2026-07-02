@@ -1,5 +1,5 @@
 /**
- * Generates the Prodcast favicon and PWA icons using only Node.js built-ins.
+ * Generates the Impulso Ecommerce Admin favicon and PWA icons using only Node.js built-ins.
  * The mark mirrors public/logo-mark.svg and is supersampled for smooth edges.
  */
 import { deflateSync } from 'zlib'

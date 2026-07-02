@@ -1,10 +1,10 @@
 import type { ApiError } from '@/types/api'
 import type { RefreshResponse } from '@/types/auth'
 
-export const TOKEN_KEY = 'prodcast_token'
-export const REFRESH_TOKEN_KEY = 'prodcast_refresh_token'
-export const SESSION_EXPIRED_EVENT = 'prodcast:session-expired'
-export const TOKEN_REFRESHED_EVENT = 'prodcast:token-refreshed'
+export const TOKEN_KEY = 'impulso_ecommerce_admin_token'
+export const REFRESH_TOKEN_KEY = 'impulso_ecommerce_admin_refresh_token'
+export const SESSION_EXPIRED_EVENT = 'impulso_ecommerce_admin:session-expired'
+export const TOKEN_REFRESHED_EVENT = 'impulso_ecommerce_admin:token-refreshed'
 
 let refreshPromise: Promise<string> | null = null
 

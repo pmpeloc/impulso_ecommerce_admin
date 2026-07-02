@@ -20,6 +20,6 @@ export async function loginViaApi(page: Page): Promise<void> {
   // same mechanism as src/lib/auth.ts login(), guaranteed to be seen by the middleware
   await page.evaluate((t) => {
     document.cookie = 'session=1; path=/; SameSite=Lax'
-    localStorage.setItem('prodcast_token', t)
+    localStorage.setItem('impulso_ecommerce_admin_token', t)
   }, token)
 }

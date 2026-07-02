@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Prodcast",
-  description: "Capturá y publicá tus productos desde el celular",
+  title: "Impulso Ecommerce Admin",
+  description: "Gestioná productos, accesos y ventas de tu negocio desde el celular",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Prodcast",
+    title: "Impulso Ecommerce Admin",
   },
 };
 

@@ -1,4 +1,4 @@
-# Prodcast Frontend — Plan Sprint 1
+# Impulso Ecommerce Admin Frontend — Plan Sprint 1
 
 > Generado: 2026-06-02
 > Spec: docs/spec.md
@@ -9,7 +9,7 @@
 
 ## [PENDING] scaffold-project
 
-- Archivo: `/` (raíz de prodcast_app)
+- Archivo: `/` (raíz de impulso_ecommerce_admin)
 - Test primero: verificar que `npx vitest run` corre sin errores y que existe al menos un test dummy
 - Implementación: ejecutar `npx create-next-app@14 . --typescript --tailwind --app --src-dir --import-alias "@/*" --no-git`. Instalar dependencias adicionales: `zustand swr react-hook-form zod next-pwa`. Instalar dev deps: `vitest @vitejs/plugin-react @testing-library/react @testing-library/user-event jsdom @testing-library/jest-dom`. Configurar `vitest.config.ts` con environment jsdom y setup file.
 - Verificación: `npm run build` sin errores. `npx vitest run` corre el test dummy.
@@ -74,7 +74,7 @@
 
 - Archivo: `src/components/layout/Header.tsx`, `src/components/layout/BottomNav.tsx`, `src/app/(auth)/layout.tsx`
 - Test primero: tests de renderizado — Header muestra el nombre de la app y botón de logout. BottomNav muestra los links de navegación activos según la ruta actual.
-- Implementación: `Header.tsx` con logo/nombre "Prodcast" y botón logout que llama a `useAuth().logout()`. `BottomNav.tsx` con links: Dashboard (ícono casa) y Nuevo Producto (ícono +). Usar `usePathname()` para el estado activo. Incluir en `(auth)/layout.tsx`.
+- Implementación: `Header.tsx` con logo/nombre "Impulso Ecommerce Admin" y botón logout que llama a `useAuth().logout()`. `BottomNav.tsx` con links: Dashboard (ícono casa) y Nuevo Producto (ícono +). Usar `usePathname()` para el estado activo. Incluir en `(auth)/layout.tsx`.
 - Verificación: tests pasan. El layout se ve correcto en viewport móvil (375px).
 
 ---

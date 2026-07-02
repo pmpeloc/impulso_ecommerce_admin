@@ -7,7 +7,7 @@ const IMAGE_FIXTURE = path.join(__dirname, '../../fixtures/test-image.jpg')
 const PRODUCT_NAME = 'Almohada Full Flow @full'
 
 // @full: runs the complete user journey against the real API.
-// Requires prodcast_api with stub publish channels configured so the pipeline
+// Requires impulso_ecommerce_api with stub publish channels configured so the pipeline
 // can reach 'published' state without real third-party integrations.
 // Timeout: 60s per test (generous for pipeline polling).
 

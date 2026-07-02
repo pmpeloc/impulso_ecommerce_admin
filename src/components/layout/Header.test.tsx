@@ -19,7 +19,7 @@ describe('Header', () => {
 
   it('muestra el nombre de la app', () => {
     render(<Header />)
-    expect(screen.getByText('Prodcast')).toBeInTheDocument()
+    expect(screen.getByText('Impulso')).toBeInTheDocument()
   })
 
   it('tiene un botón de salir', () => {

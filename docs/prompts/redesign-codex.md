@@ -1,8 +1,8 @@
-# Prompt para Codex — Aplicar rediseño Hi-Fi de Prodcast (Claude Design)
+# Prompt para Codex — Aplicar rediseño Hi-Fi de Impulso Ecommerce Admin (Claude Design)
 
 ## Cómo usar este prompt
 
-1. Abrí Codex en el repo `prodcast_app/`
+1. Abrí Codex en el repo `impulso_ecommerce_admin/`
 2. Asegurate de que `AGENTS.md` (raíz del repo) esté presente — Codex lo lee automáticamente como contexto
 3. Adjuntá el zip descargado del handoff de Claude Design
 4. Pegá el prompt de abajo, seguido del prompt de "Handoff to Claude Code" que generó Claude Design (pegalo a continuación, sin modificar)
@@ -13,7 +13,7 @@
 
 Leé `AGENTS.md` en la raíz de este repo antes de hacer cualquier cambio — contiene las reglas del proyecto, el design system a aplicar, y qué partes del código NO se pueden modificar.
 
-Tu tarea es aplicar el rediseño visual hi-fi generado en Claude Design (adjunto: zip + prompt de handoff que sigue a continuación) a los componentes existentes de `prodcast_app/src/`.
+Tu tarea es aplicar el rediseño visual hi-fi generado en Claude Design (adjunto: zip + prompt de handoff que sigue a continuación) a los componentes existentes de `impulso_ecommerce_admin/src/`.
 
 Reglas clave (ya detalladas en `AGENTS.md`, resumidas acá):
 
@@ -27,7 +27,7 @@ Reglas clave (ya detalladas en `AGENTS.md`, resumidas acá):
 
 Al finalizar:
 - Corré `npm test` y `npm run build`, deben pasar sin errores
-- Actualizá `prodcast_app/docs/progress.md` agregando una sección "Rediseño Hi-Fi (Claude Design)" con `[DONE] componente — descripción del cambio` por cada archivo modificado
+- Actualizá `impulso_ecommerce_admin/docs/progress.md` agregando una sección "Rediseño Hi-Fi (Claude Design)" con `[DONE] componente — descripción del cambio` por cada archivo modificado
 - Si encontrás features del diseño que requieren cambios de API/datos no disponibles, listalos en `docs/progress.md` bajo "Pendiente" como deuda técnica, sin implementarlos
 
 ---
