@@ -6,6 +6,16 @@
 campos nuevos en `Product`/`TenantConfig`). Coordinarse: los endpoints deben existir antes de consumirlos.
 **Estado:** Brainstorming cerrado con Misael
 
+> **Nota de seguridad — refinamiento 2026-07-07:** la API sumó una comisión de venta interna de Red
+> Impulso (`commission_pct`, `commission_mode`, `commission_basis` en `tenant_config`,
+> `commission_pct_override` en `products`). **Ninguno de estos campos se declara en los tipos de este
+> repo, ni se renderiza en ningún componente.** La API los excluye explícitamente de toda respuesta
+> `/admin/*` (allowlist del lado del backend), así que esto no debería requerir ningún manejo especial
+> acá — se documenta solo para que si en algún momento el JSON de `GET /admin/tenant-config` o `GET
+> /admin/products` trae una clave `commission_*` por error, se trate como un bug de seguridad a reportar
+> de inmediato, no como un campo más para mostrar en la UI. Sin endpoint ni UI de comisión en este
+> sprint — se configura por BD hasta que exista `impulso_core_app`.
+
 ---
 
 ## Contexto
@@ -127,4 +137,6 @@ chequeo de `product_source_mode` de la sección 3.
       al menos funcional explícito
 - [ ] Ajuste global de % funcionando end-to-end contra la API (staging)
 - [ ] Rename de categoría refleja en todos los productos tras `mutate`
+- [ ] `src/types/tenant.ts` y `src/types/product.ts` de este repo **no** declaran ningún campo
+      `commission_*` — confirmar contra la respuesta real de `GET /admin/tenant-config` en staging
 - [ ] `docs/progress.md` actualizado
