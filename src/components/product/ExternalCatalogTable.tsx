@@ -66,7 +66,7 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
                 <input
                   type="number"
                   defaultValue={product.price}
-                  aria-label={`Precio propio retail de ${product.name}`}
+                  aria-label={`Precio propio retail de producto ${product.id}`}
                   className={OWN_PRICE_INPUT_CLASSES}
                 />
               </td>
@@ -74,7 +74,7 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
                 <input
                   type="number"
                   defaultValue={product.price_wholesale ?? undefined}
-                  aria-label={`Precio propio mayorista de ${product.name}`}
+                  aria-label={`Precio propio mayorista de producto ${product.id}`}
                   className={OWN_PRICE_INPUT_CLASSES}
                 />
               </td>
