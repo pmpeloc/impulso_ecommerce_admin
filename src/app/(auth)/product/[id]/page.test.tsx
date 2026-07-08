@@ -47,6 +47,9 @@ const mockProduct: Product = {
   price_wholesale: null,
   price_locked: false,
   stock_mode: 'manual',
+  category: null,
+  sku: null,
+  stock: 0,
 }
 
 const loading = { product: null, isLoading: true, error: undefined }

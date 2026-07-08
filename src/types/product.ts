@@ -26,6 +26,9 @@ export interface Product {
   price_wholesale: number | null
   price_locked: boolean
   stock_mode: StockMode
+  category: string | null
+  sku: string | null
+  stock: number
 }
 
 export interface ProductsResponse {
