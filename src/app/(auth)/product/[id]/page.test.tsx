@@ -37,6 +37,16 @@ const mockProduct: Product = {
   audio_url: null,
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
+  source: 'own',
+  external_source: null,
+  external_id: null,
+  external_category_id: null,
+  source_price_retail: null,
+  source_price_wholesale: null,
+  source_fx_rate: null,
+  price_wholesale: null,
+  price_locked: false,
+  stock_mode: 'manual',
 }
 
 const loading = { product: null, isLoading: true, error: undefined }
