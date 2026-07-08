@@ -4,8 +4,15 @@ import DashboardPage from '@/app/(auth)/dashboard/page'
 import type { Product } from '@/types/product'
 
 const mockUseProducts = vi.hoisted(() => vi.fn())
+const mockUseTenantConfig = vi.hoisted(() => vi.fn())
 
 vi.mock('@/hooks/useProducts', () => ({ useProducts: mockUseProducts }))
+vi.mock('@/hooks/useTenantConfig', () => ({ useTenantConfig: mockUseTenantConfig }))
+vi.mock('@/components/product/ExternalCatalogTable', () => ({
+  ExternalCatalogTable: ({ products }: { products: Product[] }) => (
+    <div data-testid="external-catalog-table">{products.length} productos externos</div>
+  ),
+}))
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
   usePathname: () => '/dashboard',
@@ -44,7 +51,14 @@ const makeProduct = (overrides: Partial<Product> = {}): Product => ({
 const idle = { isLoading: false, error: undefined }
 
 describe('DashboardPage', () => {
-  beforeEach(() => mockUseProducts.mockReset())
+  beforeEach(() => {
+    mockUseProducts.mockReset()
+    mockUseTenantConfig.mockReset()
+    // Default: sin mock explícito, useTenantConfig se comporta como si no hubiera
+    // tenantConfig todavía (equivalente a 'own') — preserva el comportamiento de
+    // los tests pre-existentes, que no lo mockean.
+    mockUseTenantConfig.mockReturnValue({ tenantConfig: undefined, isLoading: false, error: undefined })
+  })
 
   it('muestra spinner mientras carga', () => {
     mockUseProducts.mockReturnValue({ products: [], total: 0, isLoading: true, error: undefined })
@@ -124,5 +138,86 @@ describe('DashboardPage', () => {
     await user.click(screen.getByRole('button', { name: /siguiente/i }))
 
     expect(mockUseProducts).toHaveBeenLastCalledWith(2, 20)
+  })
+
+  it("product_source_mode 'own' — se comporta igual que sin tenantConfig (regresión)", () => {
+    mockUseTenantConfig.mockReturnValue({
+      tenantConfig: { product_source_mode: 'own' },
+      isLoading: false,
+      error: undefined,
+    })
+    mockUseProducts.mockReturnValue({
+      products: [makeProduct({ name: 'Almohada Premium' })],
+      total: 1,
+      ...idle,
+    })
+
+    render(<DashboardPage />)
+
+    expect(screen.getByText('Almohada Premium')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /agregar producto/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /nuevo producto/i })).toBeInTheDocument()
+    expect(screen.queryByTestId('external-catalog-table')).not.toBeInTheDocument()
+  })
+
+  it("tenantConfig undefined (loading) se comporta como 'own'", () => {
+    mockUseTenantConfig.mockReturnValue({ tenantConfig: undefined, isLoading: true, error: undefined })
+    mockUseProducts.mockReturnValue({
+      products: [makeProduct({ name: 'Almohada Premium' })],
+      total: 1,
+      ...idle,
+    })
+
+    render(<DashboardPage />)
+
+    expect(screen.getByText('Almohada Premium')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /agregar producto/i })).toBeInTheDocument()
+    expect(screen.queryByTestId('external-catalog-table')).not.toBeInTheDocument()
+  })
+
+  it("product_source_mode 'external' — solo ExternalCatalogTable, sin botón de alta", () => {
+    mockUseTenantConfig.mockReturnValue({
+      tenantConfig: { product_source_mode: 'external' },
+      isLoading: false,
+      error: undefined,
+    })
+    mockUseProducts.mockReturnValue({
+      products: [
+        makeProduct({ id: '1', name: 'Producto propio', source: 'own' }),
+        makeProduct({ id: '2', name: 'Producto externo', source: 'external' }),
+      ],
+      total: 2,
+      ...idle,
+    })
+
+    render(<DashboardPage />)
+
+    expect(screen.getByTestId('external-catalog-table')).toBeInTheDocument()
+    expect(screen.getByText('1 productos externos')).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /agregar producto/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /nuevo producto/i })).not.toBeInTheDocument()
+  })
+
+  it("product_source_mode 'hybrid' — ambas vistas presentes", () => {
+    mockUseTenantConfig.mockReturnValue({
+      tenantConfig: { product_source_mode: 'hybrid' },
+      isLoading: false,
+      error: undefined,
+    })
+    mockUseProducts.mockReturnValue({
+      products: [
+        makeProduct({ id: '1', name: 'Producto propio', source: 'own' }),
+        makeProduct({ id: '2', name: 'Producto externo', source: 'external' }),
+      ],
+      total: 2,
+      ...idle,
+    })
+
+    render(<DashboardPage />)
+
+    expect(screen.getByText('Producto propio')).toBeInTheDocument()
+    expect(screen.getByTestId('external-catalog-table')).toBeInTheDocument()
+    expect(screen.getByText('1 productos externos')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /agregar producto/i })).toBeInTheDocument()
   })
 })

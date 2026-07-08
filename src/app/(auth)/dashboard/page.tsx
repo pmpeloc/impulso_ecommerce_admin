@@ -3,13 +3,20 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useProducts } from '@/hooks/useProducts'
+import { useTenantConfig } from '@/hooks/useTenantConfig'
 import { ProductCard } from '@/components/product/ProductCard'
+import { ExternalCatalogTable } from '@/components/product/ExternalCatalogTable'
 
 const PAGE_SIZE = 20
 
 export default function DashboardPage() {
   const [page, setPage] = useState(1)
   const { products, total, isLoading, error } = useProducts(page, PAGE_SIZE)
+  const { tenantConfig } = useTenantConfig()
+
+  // Mientras tenantConfig no llegó, se trata como 'own' — evita un segundo spinner
+  // y preserva la vista actual (Renuevo/Antonello) sin parpadeo.
+  const sourceMode = tenantConfig?.product_source_mode ?? 'own'
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
@@ -25,6 +32,16 @@ export default function DashboardPage() {
     return (
       <div className="p-6 text-center">
         <p className="text-error">Error al cargar los productos</p>
+      </div>
+    )
+  }
+
+  // Modo 'external': el negocio no carga productos a mano — solo se muestra el
+  // catálogo sincronizado del proveedor, sin acciones de alta manual.
+  if (sourceMode === 'external') {
+    return (
+      <div className="mx-auto max-w-6xl p-4 md:p-[18px]">
+        <ExternalCatalogTable products={products.filter((p) => p.source === 'external')} />
       </div>
     )
   }
@@ -100,6 +117,13 @@ export default function DashboardPage() {
             </div>
           )}
         </>
+      )}
+
+      {sourceMode === 'hybrid' && (
+        <div className="mt-8">
+          <h2 className="mb-3 text-lg font-bold tracking-[-0.02em]">Catálogo externo</h2>
+          <ExternalCatalogTable products={products.filter((p) => p.source === 'external')} />
+        </div>
       )}
 
       <Link
