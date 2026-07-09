@@ -102,3 +102,42 @@
 [DONE] src/lib/api.test.ts — cobertura de refresh, concurrencia, rotación, compatibilidad y sesión inválida
 [DONE] src/app/(auth)/layout.test.tsx — cobertura de logout/redirección por sesión expirada
 [DONE] verificación — 187 tests frontend pasan y `next build` finaliza correctamente
+
+## Sprint Distribuidora Nahuel — Admin de catálogo externo
+
+> Completado (código): 2026-07-09 — pendiente: smoke manual en navegador antes de deployar
+> Spec/Plan: `docs/spec-distribuidora-victoria.md`, `docs/plan-distribuidora-victoria.md`
+> Depende de: endpoints admin de `impulso_ecommerce_api` (ya completos y aprobados en ese repo)
+> Ejecutado con: superpowers subagent-driven-development, TDD estricto por tarea, code review por tarea + review final de todo el branch
+
+### Fase 0 — Tipos y config
+[DONE] types-tenant-nuevo — `src/types/tenant.ts` (nuevo), espejo exacto del allowlist admin de la API — **sin ningún campo `commission_*`**, verificado
+[DONE] types-product-external-fields — 10 campos nuevos en `Product` (`src/types/product.ts`)
+[DONE] hook-use-tenant-config — `src/hooks/useTenantConfig.ts`, corrige un error del spec original (la respuesta viene envuelta en `{ tenantConfig }`, no cruda)
+
+### Fase 2 — Tabla de catálogo externo (ejecutada antes que Fase 1 — ver nota de orden abajo)
+[DONE] price-lock-badge — `src/components/product/PriceLockBadge.tsx`
+[DONE] external-catalog-table-render — `src/components/product/ExternalCatalogTable.tsx` (solo render). Agregó `category`/`sku`/`stock` a `Product` (aditivo, no estaban en el tipo)
+[DONE] external-catalog-table-edit-price — wiring de `PATCH /admin/products/:id`. Agregó `apiPatch` a `src/lib/api.ts` (no existía, el plan asumía que sí). Un fix de revisión: inputs pasaron de no controlados a controlados para reflejar precios normalizados por el servidor
+[DONE] external-catalog-table-unlock — wiring de `PATCH /admin/products/:id/price-lock`
+[DONE] external-catalog-table-edit-category — wiring de `PATCH /admin/external-categories/:id`, con propagación a todas las filas que comparten `external_category_id` (no solo la editada)
+
+### Fase 1 — Render condicional de la lista
+[DONE] product-list-gating — `src/app/(auth)/dashboard/page.tsx` (era el archivo real de la lista, no `product/page.tsx` como decía el plan). Modo `'own'` verificado byte-a-byte idéntico al comportamiento anterior; `'external'` oculta alta manual; `'hybrid'` muestra ambas
+
+### Fase 3 — Ajuste global de precios
+[DONE] bulk-price-adjust-modal — `src/components/product/BulkPriceAdjustModal.tsx`, sin componente `Modal` genérico nuevo (YAGNI, un solo caso de uso)
+[DONE] bulk-price-adjust-entry-point — botón "Ajustar precios" en `dashboard/page.tsx`, visible solo en `external`/`hybrid`
+
+### Fase 4 — Regresión
+[DONE] regresion-own-tenants — verificado automatizado: 228/228 tests en verde, `tsc --noEmit` con los mismos 4 errores preexistentes sin relación (documentados, sin cambios durante todo el sprint). **Pendiente:** smoke manual en navegador — no había herramienta de automatización de browser disponible en esta sesión. Riesgo bajo (el JSX del modo `'own'` quedó verificado idéntico byte a byte en cada tarea que tocó ese archivo), pero falta la confirmación visual antes de deployar.
+
+### Correcciones de premisa hechas durante la ejecución
+- El plan asumía `src/app/(auth)/product/page.tsx` como la lista de productos — el archivo real es `dashboard/page.tsx`.
+- El plan asumía que `src/lib/api.ts` ya tenía `apiPatch` — no existía, se agregó.
+- El orden de ejecución de Fase 1 y Fase 2 se invirtió: `ExternalCatalogTable` se construyó antes que el gating de la página, porque el gating necesita importar el componente real (evita un stub descartable).
+- Limitación aceptada y documentada (no resuelta en este sprint): después de un ajuste masivo de precios, la tabla no se refresca sola con los precios nuevos — el modal ya muestra la confirmación con el número real de productos actualizados, pero hace falta recargar la página para ver los precios nuevos en la tabla. `useProducts()` no expone `mutate` hoy.
+
+### Pendiente antes de habilitar esto en producción
+- Smoke manual en navegador con un tenant `'own'` (Renuevo/Antonello) y otro `'external'` — confirmar cero diferencias visuales en el primero y funcionamiento end-to-end en el segundo.
+- Todo lo pendiente del lado de `impulso_ecommerce_api` (migrations sin aplicar contra Supabase real, `SYNC_SECRET`, markup/comisión de Distribuidora Nahuel, cron de 30 min, dominio y WhatsApp real) — ver `impulso_ecommerce_api/docs/progress.md`, sección "Sprint Distribuidora Nahuel".
