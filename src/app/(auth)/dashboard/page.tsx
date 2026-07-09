@@ -137,10 +137,9 @@ export default function DashboardPage() {
             </Button>
           </div>
           <ExternalCatalogTable products={products.filter((p) => p.source === 'external')} />
+          <BulkPriceAdjustModal open={bulkModalOpen} onClose={() => setBulkModalOpen(false)} />
         </div>
       )}
-
-      <BulkPriceAdjustModal open={bulkModalOpen} onClose={() => setBulkModalOpen(false)} />
 
       <Link
         href="/product/new"
