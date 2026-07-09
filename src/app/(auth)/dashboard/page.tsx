@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useProducts } from '@/hooks/useProducts'
 import { useTenantConfig } from '@/hooks/useTenantConfig'
@@ -20,6 +20,22 @@ export default function DashboardPage() {
   // Mientras tenantConfig no llegó, se trata como 'own' — evita un segundo spinner
   // y preserva la vista actual (Renuevo/Antonello) sin parpadeo.
   const sourceMode = tenantConfig?.product_source_mode ?? 'own'
+
+  // Memoizados sobre `products` (referencia estable entre renders no relacionados,
+  // vía SWR) — un `.filter()` inline recrearía el array en cada render del padre
+  // (ej: abrir el modal de ajuste de precios) y dispararía el resync de
+  // ExternalCatalogTable, pisando ediciones ya confirmadas por el servidor.
+  const externalProducts = useMemo(
+    () => products.filter((p) => p.source === 'external'),
+    [products],
+  )
+  const ownProducts = useMemo(
+    () => products.filter((p) => p.source === 'own'),
+    [products],
+  )
+  // En modo 'hybrid' la lista principal solo muestra productos propios — los
+  // externos ya se muestran en la sección "Catálogo externo" más abajo.
+  const mainListProducts = sourceMode === 'hybrid' ? ownProducts : products
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
@@ -49,7 +65,7 @@ export default function DashboardPage() {
             Ajustar precios
           </Button>
         </div>
-        <ExternalCatalogTable products={products.filter((p) => p.source === 'external')} />
+        <ExternalCatalogTable products={externalProducts} />
         <BulkPriceAdjustModal open={bulkModalOpen} onClose={() => setBulkModalOpen(false)} />
       </div>
     )
@@ -83,7 +99,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {products.length === 0 ? (
+      {mainListProducts.length === 0 ? (
         <div className="flex flex-col items-center rounded-xl border border-border bg-surface px-5 py-16 text-center">
           <div className="grid h-[72px] w-[72px] place-items-center rounded-[20px] border border-dashed border-border-strong text-3xl text-[#8A8A96]">◇</div>
           <p className="mb-1 mt-4 text-lg font-semibold">Aún no hay productos</p>
@@ -99,7 +115,7 @@ export default function DashboardPage() {
               <span>Canales</span>
               <span>Actualizado</span>
             </div>
-            {products.map((product) => (
+            {mainListProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
@@ -136,7 +152,7 @@ export default function DashboardPage() {
               Ajustar precios
             </Button>
           </div>
-          <ExternalCatalogTable products={products.filter((p) => p.source === 'external')} />
+          <ExternalCatalogTable products={externalProducts} />
           <BulkPriceAdjustModal open={bulkModalOpen} onClose={() => setBulkModalOpen(false)} />
         </div>
       )}
