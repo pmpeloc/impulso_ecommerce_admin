@@ -196,4 +196,50 @@ describe('ExternalCatalogTable', () => {
       expect(mockedApiPatch).toHaveBeenCalledWith('/api/v1/admin/products/prod-1', { price_wholesale: 1300 })
     })
   })
+
+  it('click en el PriceLockBadge de una fila trabada dispara PATCH a /price-lock con { locked: false }, nada más', async () => {
+    const product = createProduct({ id: 'prod-1', price_locked: true })
+    mockedApiPatch.mockResolvedValue({ product: { ...product, price_locked: false } })
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    const button = screen.getByRole('button', { name: 'Destrabar precio' })
+    fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(mockedApiPatch).toHaveBeenCalledWith(
+        '/api/v1/admin/products/prod-1/price-lock',
+        { locked: false },
+      )
+    })
+  })
+
+  it('cuando el PATCH de unlock resuelve, el PriceLockBadge desaparece de esa fila', async () => {
+    const product = createProduct({ id: 'prod-1', name: 'Producto a destrabar', price_locked: true })
+    mockedApiPatch.mockResolvedValue({ product: { ...product, price_locked: false } })
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    const button = screen.getByRole('button', { name: 'Destrabar precio' })
+    fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: 'Destrabar precio' })).not.toBeInTheDocument()
+    })
+  })
+
+  it('cuando el PATCH de unlock rechaza, el badge sigue mostrando locked (no cambia optimísticamente)', async () => {
+    const product = createProduct({ id: 'prod-1', name: 'Producto que falla', price_locked: true })
+    mockedApiPatch.mockRejectedValue(new Error('network error'))
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    const button = screen.getByRole('button', { name: 'Destrabar precio' })
+    fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(screen.getByText(/no se pudo destrabar/i)).toBeInTheDocument()
+    })
+    expect(screen.getByRole('button', { name: 'Destrabar precio' })).toBeInTheDocument()
+  })
 })

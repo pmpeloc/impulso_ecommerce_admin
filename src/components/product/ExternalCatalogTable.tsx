@@ -22,6 +22,7 @@ type PriceField = 'price' | 'price_wholesale'
 export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
   const [rows, setRows] = useState<Product[]>(products)
   const [priceErrors, setPriceErrors] = useState<Record<string, string>>({})
+  const [unlockErrors, setUnlockErrors] = useState<Record<string, string>>({})
   // Texto que el usuario está tipeando ahora mismo, separado del valor confirmado
   // por el servidor que vive en `rows`. Mientras haya una entrada acá, el input
   // muestra este valor; al confirmar (éxito o error) se limpia y el input vuelve
@@ -95,6 +96,29 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
     }
   }
 
+  async function handleUnlock(productId: string) {
+    try {
+      const { product } = await apiPatch<{ product: Product }>(
+        `/api/v1/admin/products/${productId}/price-lock`,
+        { locked: false },
+      )
+      setRows((prev) => prev.map((r) => (r.id === productId ? product : r)))
+      setUnlockErrors((current) => {
+        if (!(productId in current)) return current
+        const rest = { ...current }
+        delete rest[productId]
+        return rest
+      })
+    } catch {
+      // No hay estado optimista que revertir: `rows` no se tocó hasta que
+      // llegó la respuesta, así que el badge sigue mostrando `locked: true`.
+      setUnlockErrors((current) => ({
+        ...current,
+        [productId]: 'No se pudo destrabar el precio. Intentá de nuevo.',
+      }))
+    }
+  }
+
   return (
     <table className="w-full border-collapse text-left">
       <thead>
@@ -116,6 +140,7 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
           const imgSrc = product.image_optimized_url ?? product.image_url
           const retailError = priceErrors[`${product.id}-price`]
           const wholesaleError = priceErrors[`${product.id}-price_wholesale`]
+          const unlockError = unlockErrors[product.id]
 
           return (
             <tr key={product.id} className="border-b border-border">
@@ -173,7 +198,13 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
                 )}
               </td>
               <td className="px-3 py-2">
-                <PriceLockBadge locked={product.price_locked} />
+                <PriceLockBadge
+                  locked={product.price_locked}
+                  onUnlock={() => handleUnlock(product.id)}
+                />
+                {unlockError && (
+                  <p className="mt-1 text-xs text-error">{unlockError}</p>
+                )}
               </td>
             </tr>
           )
