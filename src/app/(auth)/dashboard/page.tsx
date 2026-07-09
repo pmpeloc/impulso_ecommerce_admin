@@ -6,11 +6,14 @@ import { useProducts } from '@/hooks/useProducts'
 import { useTenantConfig } from '@/hooks/useTenantConfig'
 import { ProductCard } from '@/components/product/ProductCard'
 import { ExternalCatalogTable } from '@/components/product/ExternalCatalogTable'
+import { BulkPriceAdjustModal } from '@/components/product/BulkPriceAdjustModal'
+import { Button } from '@/components/ui/Button'
 
 const PAGE_SIZE = 20
 
 export default function DashboardPage() {
   const [page, setPage] = useState(1)
+  const [bulkModalOpen, setBulkModalOpen] = useState(false)
   const { products, total, isLoading, error } = useProducts(page, PAGE_SIZE)
   const { tenantConfig } = useTenantConfig()
 
@@ -41,7 +44,13 @@ export default function DashboardPage() {
   if (sourceMode === 'external') {
     return (
       <div className="mx-auto max-w-6xl p-4 md:p-[18px]">
+        <div className="mb-4 flex justify-end">
+          <Button variant="secondary" className="w-auto" onClick={() => setBulkModalOpen(true)}>
+            Ajustar precios
+          </Button>
+        </div>
         <ExternalCatalogTable products={products.filter((p) => p.source === 'external')} />
+        <BulkPriceAdjustModal open={bulkModalOpen} onClose={() => setBulkModalOpen(false)} />
       </div>
     )
   }
@@ -121,10 +130,17 @@ export default function DashboardPage() {
 
       {sourceMode === 'hybrid' && (
         <div className="mt-8">
-          <h2 className="mb-3 text-lg font-bold tracking-[-0.02em]">Catálogo externo</h2>
+          <div className="mb-3 flex items-center justify-between gap-4">
+            <h2 className="text-lg font-bold tracking-[-0.02em]">Catálogo externo</h2>
+            <Button variant="secondary" className="w-auto" onClick={() => setBulkModalOpen(true)}>
+              Ajustar precios
+            </Button>
+          </div>
           <ExternalCatalogTable products={products.filter((p) => p.source === 'external')} />
         </div>
       )}
+
+      <BulkPriceAdjustModal open={bulkModalOpen} onClose={() => setBulkModalOpen(false)} />
 
       <Link
         href="/product/new"

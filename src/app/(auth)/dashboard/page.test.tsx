@@ -13,6 +13,13 @@ vi.mock('@/components/product/ExternalCatalogTable', () => ({
     <div data-testid="external-catalog-table">{products.length} productos externos</div>
   ),
 }))
+const mockBulkPriceAdjustModal = vi.hoisted(() => vi.fn())
+vi.mock('@/components/product/BulkPriceAdjustModal', () => ({
+  BulkPriceAdjustModal: (props: { open: boolean; onClose: () => void }) => {
+    mockBulkPriceAdjustModal(props)
+    return <div data-testid="bulk-price-adjust-modal">{props.open ? 'open' : 'closed'}</div>
+  },
+}))
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
   usePathname: () => '/dashboard',
@@ -219,5 +226,80 @@ describe('DashboardPage', () => {
     expect(screen.getByTestId('external-catalog-table')).toBeInTheDocument()
     expect(screen.getByText('1 productos externos')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /agregar producto/i })).toBeInTheDocument()
+  })
+
+  it("product_source_mode 'own' — el botón Ajustar precios no está en el DOM", () => {
+    mockUseTenantConfig.mockReturnValue({
+      tenantConfig: { product_source_mode: 'own' },
+      isLoading: false,
+      error: undefined,
+    })
+    mockUseProducts.mockReturnValue({
+      products: [makeProduct({ name: 'Almohada Premium' })],
+      total: 1,
+      ...idle,
+    })
+
+    render(<DashboardPage />)
+
+    expect(screen.queryByRole('button', { name: /ajustar precios/i })).not.toBeInTheDocument()
+  })
+
+  it("product_source_mode 'external' — el botón Ajustar precios está presente", () => {
+    mockUseTenantConfig.mockReturnValue({
+      tenantConfig: { product_source_mode: 'external' },
+      isLoading: false,
+      error: undefined,
+    })
+    mockUseProducts.mockReturnValue({
+      products: [makeProduct({ id: '2', name: 'Producto externo', source: 'external' })],
+      total: 1,
+      ...idle,
+    })
+
+    render(<DashboardPage />)
+
+    expect(screen.getByRole('button', { name: /ajustar precios/i })).toBeInTheDocument()
+  })
+
+  it("product_source_mode 'hybrid' — el botón Ajustar precios está presente", () => {
+    mockUseTenantConfig.mockReturnValue({
+      tenantConfig: { product_source_mode: 'hybrid' },
+      isLoading: false,
+      error: undefined,
+    })
+    mockUseProducts.mockReturnValue({
+      products: [
+        makeProduct({ id: '1', name: 'Producto propio', source: 'own' }),
+        makeProduct({ id: '2', name: 'Producto externo', source: 'external' }),
+      ],
+      total: 2,
+      ...idle,
+    })
+
+    render(<DashboardPage />)
+
+    expect(screen.getByRole('button', { name: /ajustar precios/i })).toBeInTheDocument()
+  })
+
+  it('click en Ajustar precios (modo external) abre el modal', async () => {
+    const user = userEvent.setup()
+    mockUseTenantConfig.mockReturnValue({
+      tenantConfig: { product_source_mode: 'external' },
+      isLoading: false,
+      error: undefined,
+    })
+    mockUseProducts.mockReturnValue({
+      products: [makeProduct({ id: '2', name: 'Producto externo', source: 'external' })],
+      total: 1,
+      ...idle,
+    })
+
+    render(<DashboardPage />)
+    await user.click(screen.getByRole('button', { name: /ajustar precios/i }))
+
+    expect(mockBulkPriceAdjustModal).toHaveBeenLastCalledWith(
+      expect.objectContaining({ open: true }),
+    )
   })
 })
