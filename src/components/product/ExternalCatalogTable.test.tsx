@@ -150,6 +150,23 @@ describe('ExternalCatalogTable', () => {
     })
   })
 
+  it('cuando el PATCH resuelve con un price distinto al tipeado, el input muestra el valor del servidor (no el tipeado)', async () => {
+    const product = createProduct({ id: 'prod-1', price: 1000 })
+    mockedApiPatch.mockResolvedValue({
+      product: { ...product, price: 1499, price_locked: true },
+    })
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    const input = screen.getByLabelText('Precio propio retail de producto prod-1') as HTMLInputElement
+    fireEvent.change(input, { target: { value: '1500' } })
+    fireEvent.blur(input)
+
+    await waitFor(() => {
+      expect(input.value).toBe('1499')
+    })
+  })
+
   it('cuando el PATCH rechaza, el input vuelve a mostrar el valor original', async () => {
     const product = createProduct({ id: 'prod-1', price: 1000 })
     mockedApiPatch.mockRejectedValue(new Error('network error'))

@@ -22,25 +22,53 @@ type PriceField = 'price' | 'price_wholesale'
 export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
   const [rows, setRows] = useState<Product[]>(products)
   const [priceErrors, setPriceErrors] = useState<Record<string, string>>({})
+  // Texto que el usuario está tipeando ahora mismo, separado del valor confirmado
+  // por el servidor que vive en `rows`. Mientras haya una entrada acá, el input
+  // muestra este valor; al confirmar (éxito o error) se limpia y el input vuelve
+  // a reflejar `rows`, que es la única fuente de verdad server-confirmed.
+  const [draftPrices, setDraftPrices] = useState<Record<string, string>>({})
 
   // Resincroniza si el padre re-fetchea/pagina y cambia la referencia de `products`,
   // para no dejar la tabla mostrando datos viejos.
   useEffect(() => {
     setRows(products)
+    setDraftPrices({})
   }, [products])
+
+  function handlePriceChange(
+    id: string,
+    field: PriceField,
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const key = `${id}-${field}`
+    setDraftPrices((current) => ({ ...current, [key]: event.target.value }))
+  }
+
+  function clearDraft(key: string) {
+    setDraftPrices((current) => {
+      if (!(key in current)) return current
+      const rest = { ...current }
+      delete rest[key]
+      return rest
+    })
+  }
 
   async function handlePriceBlur(
     row: Product,
     field: PriceField,
     event: React.FocusEvent<HTMLInputElement>,
   ) {
+    // `row` viene de `rows` (estado confirmado por el servidor), nunca se
+    // muta por tipeo — es la base correcta para la comparación de "sin cambios".
     const previousValue = field === 'price' ? row.price : row.price_wholesale
     const rawValue = event.target.value
     const newValue = rawValue === '' ? null : Number(rawValue)
-
-    if (newValue === previousValue) return
-
     const errorKey = `${row.id}-${field}`
+
+    if (newValue === previousValue) {
+      clearDraft(errorKey)
+      return
+    }
 
     try {
       const { product } = await apiPatch<{ product: Product }>(
@@ -49,6 +77,7 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
       )
 
       setRows((current) => current.map((r) => (r.id === row.id ? product : r)))
+      clearDraft(errorKey)
       setPriceErrors((current) => {
         if (!(errorKey in current)) return current
         const rest = { ...current }
@@ -56,8 +85,9 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
         return rest
       })
     } catch {
-      // Revertir el input al valor anterior — el PATCH no se guardó.
-      event.target.value = previousValue === null ? '' : String(previousValue)
+      // Revertir el input al valor anterior — el PATCH no se guardó. Al limpiar
+      // el draft, el input controlado vuelve a mostrar `row` (que no se tocó).
+      clearDraft(errorKey)
       setPriceErrors((current) => ({
         ...current,
         [errorKey]: 'No se pudo guardar el precio. Intentá de nuevo.',
@@ -116,9 +146,10 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
               <td className="px-3 py-2">
                 <input
                   type="number"
-                  defaultValue={product.price}
+                  value={draftPrices[`${product.id}-price`] ?? String(product.price)}
                   aria-label={`Precio propio retail de producto ${product.id}`}
                   className={OWN_PRICE_INPUT_CLASSES}
+                  onChange={(event) => handlePriceChange(product.id, 'price', event)}
                   onBlur={(event) => handlePriceBlur(product, 'price', event)}
                 />
                 {retailError && (
@@ -128,9 +159,13 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
               <td className="px-3 py-2">
                 <input
                   type="number"
-                  defaultValue={product.price_wholesale ?? undefined}
+                  value={
+                    draftPrices[`${product.id}-price_wholesale`] ??
+                    (product.price_wholesale === null ? '' : String(product.price_wholesale))
+                  }
                   aria-label={`Precio propio mayorista de producto ${product.id}`}
                   className={OWN_PRICE_INPUT_CLASSES}
+                  onChange={(event) => handlePriceChange(product.id, 'price_wholesale', event)}
                   onBlur={(event) => handlePriceBlur(product, 'price_wholesale', event)}
                 />
                 {wholesaleError && (
