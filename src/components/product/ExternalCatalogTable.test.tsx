@@ -215,8 +215,9 @@ describe('ExternalCatalogTable', () => {
   })
 
   it('cuando el PATCH de unlock resuelve, el PriceLockBadge desaparece de esa fila', async () => {
-    const product = createProduct({ id: 'prod-1', name: 'Producto a destrabar', price_locked: true })
-    mockedApiPatch.mockResolvedValue({ product: { ...product, price_locked: false } })
+    const product = createProduct({ id: 'prod-1', name: 'Producto a destrabar', price_locked: true, sku: 'OLD-SKU' })
+    // Mock returns a different SKU to prove component uses API response, not local guess
+    mockedApiPatch.mockResolvedValue({ product: { ...product, price_locked: false, sku: 'NEW-SKU-UNLOCKED' } })
 
     render(<ExternalCatalogTable products={[product]} />)
 
@@ -225,6 +226,8 @@ describe('ExternalCatalogTable', () => {
 
     await waitFor(() => {
       expect(screen.queryByRole('button', { name: 'Destrabar precio' })).not.toBeInTheDocument()
+      // Assert that the component uses the API response, not a local guess
+      expect(screen.getByText('NEW-SKU-UNLOCKED')).toBeInTheDocument()
     })
   })
 
