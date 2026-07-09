@@ -1,6 +1,13 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, within, fireEvent, waitFor } from '@testing-library/react'
 import { ExternalCatalogTable } from '@/components/product/ExternalCatalogTable'
+import { apiPatch } from '@/lib/api'
 import type { Product } from '@/types/product'
+
+vi.mock('@/lib/api', () => ({
+  apiPatch: vi.fn(),
+}))
+
+const mockedApiPatch = vi.mocked(apiPatch)
 
 function createProduct(overrides: Partial<Product> = {}): Product {
   return {
@@ -35,6 +42,10 @@ function createProduct(overrides: Partial<Product> = {}): Product {
 }
 
 describe('ExternalCatalogTable', () => {
+  beforeEach(() => {
+    mockedApiPatch.mockReset()
+  })
+
   it('renderiza una fila por producto, con el nombre visible', () => {
     const products = [
       createProduct({ id: 'prod-1', name: 'Almohadón Deluxe' }),
@@ -91,5 +102,81 @@ describe('ExternalCatalogTable', () => {
     expect(unlockedRow).toBeDefined()
     expect(within(lockedRow as HTMLElement).getByRole('button')).toBeInTheDocument()
     expect(within(unlockedRow as HTMLElement).queryByRole('button')).not.toBeInTheDocument()
+  })
+
+  it('edita el precio propio retail y en blur dispara PATCH con el nuevo valor', async () => {
+    const product = createProduct({ id: 'prod-1', price: 1000 })
+    mockedApiPatch.mockResolvedValue({ product: { ...product, price: 1500 } })
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    const input = screen.getByLabelText('Precio propio retail de producto prod-1')
+    fireEvent.change(input, { target: { value: '1500' } })
+    fireEvent.blur(input)
+
+    await waitFor(() => {
+      expect(mockedApiPatch).toHaveBeenCalledWith('/api/v1/admin/products/prod-1', { price: 1500 })
+    })
+  })
+
+  it('blur sin cambiar el valor no dispara PATCH', async () => {
+    const product = createProduct({ id: 'prod-1', price: 1000 })
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    const input = screen.getByLabelText('Precio propio retail de producto prod-1')
+    fireEvent.focus(input)
+    fireEvent.blur(input)
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(mockedApiPatch).not.toHaveBeenCalled()
+  })
+
+  it('cuando el PATCH resuelve con price_locked=true, el PriceLockBadge de esa fila aparece', async () => {
+    const product = createProduct({ id: 'prod-1', name: 'Producto trabable', price: 1000, price_locked: false })
+    mockedApiPatch.mockResolvedValue({
+      product: { ...product, price: 1500, price_locked: true },
+    })
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    const input = screen.getByLabelText('Precio propio retail de producto prod-1')
+    fireEvent.change(input, { target: { value: '1500' } })
+    fireEvent.blur(input)
+
+    const row = screen.getByText('Producto trabable').closest('tr') as HTMLElement
+    await waitFor(() => {
+      expect(within(row).getByRole('button')).toBeInTheDocument()
+    })
+  })
+
+  it('cuando el PATCH rechaza, el input vuelve a mostrar el valor original', async () => {
+    const product = createProduct({ id: 'prod-1', price: 1000 })
+    mockedApiPatch.mockRejectedValue(new Error('network error'))
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    const input = screen.getByLabelText('Precio propio retail de producto prod-1') as HTMLInputElement
+    fireEvent.change(input, { target: { value: '1500' } })
+    fireEvent.blur(input)
+
+    await waitFor(() => {
+      expect(input.value).toBe('1000')
+    })
+  })
+
+  it('edita el precio propio mayorista y en blur dispara PATCH con price_wholesale', async () => {
+    const product = createProduct({ id: 'prod-1', price_wholesale: 950 })
+    mockedApiPatch.mockResolvedValue({ product: { ...product, price_wholesale: 1300 } })
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    const input = screen.getByLabelText('Precio propio mayorista de producto prod-1')
+    fireEvent.change(input, { target: { value: '1300' } })
+    fireEvent.blur(input)
+
+    await waitFor(() => {
+      expect(mockedApiPatch).toHaveBeenCalledWith('/api/v1/admin/products/prod-1', { price_wholesale: 1300 })
+    })
   })
 })

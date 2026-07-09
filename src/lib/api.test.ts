@@ -1,6 +1,7 @@
 import {
   apiGet,
   apiPost,
+  apiPatch,
   ApiClientError,
   REFRESH_TOKEN_KEY,
   SESSION_EXPIRED_EVENT,
@@ -327,6 +328,22 @@ describe('api client', () => {
       const [, options] = mockFetch.mock.calls[0]
       expect(options.body).toBe(form)
       expect(options.headers['Content-Type']).toBeUndefined()
+    })
+  })
+
+  describe('apiPatch con JSON', () => {
+    it('envía method PATCH con body JSON', async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({}),
+      })
+
+      await apiPatch('/api/v1/admin/products/prod-1', { price: 1500 })
+
+      const [, options] = mockFetch.mock.calls[0]
+      expect(options.method).toBe('PATCH')
+      expect(options.body).toBe(JSON.stringify({ price: 1500 }))
+      expect(options.headers['Content-Type']).toBe('application/json')
     })
   })
 })

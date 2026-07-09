@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import type { Product } from '@/types/product'
 import { PriceLockBadge } from '@/components/product/PriceLockBadge'
+import { apiPatch } from '@/lib/api'
 
 interface ExternalCatalogTableProps {
   products: Product[]
@@ -15,7 +17,54 @@ function formatOriginPrice(value: number | null): string {
 const OWN_PRICE_INPUT_CLASSES =
   'w-24 rounded-lg border border-border-strong bg-surface-input px-2.5 py-1.5 text-sm text-[#EDEDF0] outline-none transition duration-150 focus:border-brand focus:ring-2 focus:ring-indigo-500/20'
 
+type PriceField = 'price' | 'price_wholesale'
+
 export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
+  const [rows, setRows] = useState<Product[]>(products)
+  const [priceErrors, setPriceErrors] = useState<Record<string, string>>({})
+
+  // Resincroniza si el padre re-fetchea/pagina y cambia la referencia de `products`,
+  // para no dejar la tabla mostrando datos viejos.
+  useEffect(() => {
+    setRows(products)
+  }, [products])
+
+  async function handlePriceBlur(
+    row: Product,
+    field: PriceField,
+    event: React.FocusEvent<HTMLInputElement>,
+  ) {
+    const previousValue = field === 'price' ? row.price : row.price_wholesale
+    const rawValue = event.target.value
+    const newValue = rawValue === '' ? null : Number(rawValue)
+
+    if (newValue === previousValue) return
+
+    const errorKey = `${row.id}-${field}`
+
+    try {
+      const { product } = await apiPatch<{ product: Product }>(
+        `/api/v1/admin/products/${row.id}`,
+        { [field]: newValue },
+      )
+
+      setRows((current) => current.map((r) => (r.id === row.id ? product : r)))
+      setPriceErrors((current) => {
+        if (!(errorKey in current)) return current
+        const rest = { ...current }
+        delete rest[errorKey]
+        return rest
+      })
+    } catch {
+      // Revertir el input al valor anterior — el PATCH no se guardó.
+      event.target.value = previousValue === null ? '' : String(previousValue)
+      setPriceErrors((current) => ({
+        ...current,
+        [errorKey]: 'No se pudo guardar el precio. Intentá de nuevo.',
+      }))
+    }
+  }
+
   return (
     <table className="w-full border-collapse text-left">
       <thead>
@@ -33,8 +82,10 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
         </tr>
       </thead>
       <tbody>
-        {products.map((product) => {
+        {rows.map((product) => {
           const imgSrc = product.image_optimized_url ?? product.image_url
+          const retailError = priceErrors[`${product.id}-price`]
+          const wholesaleError = priceErrors[`${product.id}-price_wholesale`]
 
           return (
             <tr key={product.id} className="border-b border-border">
@@ -68,7 +119,11 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
                   defaultValue={product.price}
                   aria-label={`Precio propio retail de producto ${product.id}`}
                   className={OWN_PRICE_INPUT_CLASSES}
+                  onBlur={(event) => handlePriceBlur(product, 'price', event)}
                 />
+                {retailError && (
+                  <p className="mt-1 text-xs text-error">{retailError}</p>
+                )}
               </td>
               <td className="px-3 py-2">
                 <input
@@ -76,7 +131,11 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
                   defaultValue={product.price_wholesale ?? undefined}
                   aria-label={`Precio propio mayorista de producto ${product.id}`}
                   className={OWN_PRICE_INPUT_CLASSES}
+                  onBlur={(event) => handlePriceBlur(product, 'price_wholesale', event)}
                 />
+                {wholesaleError && (
+                  <p className="mt-1 text-xs text-error">{wholesaleError}</p>
+                )}
               </td>
               <td className="px-3 py-2">
                 <PriceLockBadge locked={product.price_locked} />
