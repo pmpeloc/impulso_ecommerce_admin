@@ -245,4 +245,111 @@ describe('ExternalCatalogTable', () => {
     })
     expect(screen.getByRole('button', { name: 'Destrabar precio' })).toBeInTheDocument()
   })
+
+  it('click en la celda de categoría de una fila muestra un input con el valor actual', () => {
+    const product = createProduct({ id: 'prod-1', category: 'Almohadones' })
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    fireEvent.click(screen.getByText('Almohadones'))
+
+    const input = screen.getByLabelText('Categoría de producto prod-1') as HTMLInputElement
+    expect(input.value).toBe('Almohadones')
+  })
+
+  it('cambiar el valor de categoría y blur dispara PATCH a external-categories con el nuevo display_name', async () => {
+    const product = createProduct({
+      id: 'prod-1',
+      category: 'Almohadones',
+      external_category_id: 'cat-1',
+    })
+    mockedApiPatch.mockResolvedValue({
+      category: { id: 'cat-1', display_name: 'Almohadones Premium' },
+      productsUpdated: 1,
+    })
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    fireEvent.click(screen.getByText('Almohadones'))
+    const input = screen.getByLabelText('Categoría de producto prod-1')
+    fireEvent.change(input, { target: { value: 'Almohadones Premium' } })
+    fireEvent.blur(input)
+
+    await waitFor(() => {
+      expect(mockedApiPatch).toHaveBeenCalledWith(
+        '/api/v1/admin/external-categories/cat-1',
+        { display_name: 'Almohadones Premium' },
+      )
+    })
+  })
+
+  it('blur sin cambiar el valor de categoría no dispara PATCH', async () => {
+    const product = createProduct({
+      id: 'prod-1',
+      category: 'Almohadones',
+      external_category_id: 'cat-1',
+    })
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    fireEvent.click(screen.getByText('Almohadones'))
+    const input = screen.getByLabelText('Categoría de producto prod-1')
+    fireEvent.blur(input)
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(mockedApiPatch).not.toHaveBeenCalled()
+  })
+
+  it('renombrar la categoría de un producto propaga el nuevo nombre a todas las filas con el mismo external_category_id', async () => {
+    const productA = createProduct({
+      id: 'prod-1',
+      name: 'Almohadón A',
+      category: 'Almohadones',
+      external_category_id: 'cat-1',
+    })
+    const productB = createProduct({
+      id: 'prod-2',
+      name: 'Almohadón B',
+      category: 'Almohadones',
+      external_category_id: 'cat-1',
+    })
+    mockedApiPatch.mockResolvedValue({
+      category: { id: 'cat-1', display_name: 'Almohadones Premium' },
+      productsUpdated: 2,
+    })
+
+    render(<ExternalCatalogTable products={[productA, productB]} />)
+
+    const rowA = screen.getByText('Almohadón A').closest('tr') as HTMLElement
+    fireEvent.click(within(rowA).getByText('Almohadones'))
+
+    const input = screen.getByLabelText('Categoría de producto prod-1')
+    fireEvent.change(input, { target: { value: 'Almohadones Premium' } })
+    fireEvent.blur(input)
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Almohadones Premium')).toHaveLength(2)
+    })
+  })
+
+  it('cuando el PATCH de categoría rechaza, la celda vuelve a mostrar el valor original y muestra un error', async () => {
+    const product = createProduct({
+      id: 'prod-1',
+      category: 'Almohadones',
+      external_category_id: 'cat-1',
+    })
+    mockedApiPatch.mockRejectedValue(new Error('network error'))
+
+    render(<ExternalCatalogTable products={[product]} />)
+
+    fireEvent.click(screen.getByText('Almohadones'))
+    const input = screen.getByLabelText('Categoría de producto prod-1')
+    fireEvent.change(input, { target: { value: 'Otra categoría' } })
+    fireEvent.blur(input)
+
+    await waitFor(() => {
+      expect(screen.getByText(/no se pudo guardar la categoría/i)).toBeInTheDocument()
+    })
+    expect(screen.getByText('Almohadones')).toBeInTheDocument()
+  })
 })

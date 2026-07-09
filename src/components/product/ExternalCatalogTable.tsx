@@ -17,12 +17,20 @@ function formatOriginPrice(value: number | null): string {
 const OWN_PRICE_INPUT_CLASSES =
   'w-24 rounded-lg border border-border-strong bg-surface-input px-2.5 py-1.5 text-sm text-[#EDEDF0] outline-none transition duration-150 focus:border-brand focus:ring-2 focus:ring-indigo-500/20'
 
+// Mismo estilo que el input de precio propio, pero más ancho para nombres de categoría.
+const CATEGORY_INPUT_CLASSES =
+  'w-32 rounded-lg border border-border-strong bg-surface-input px-2.5 py-1.5 text-sm text-[#EDEDF0] outline-none transition duration-150 focus:border-brand focus:ring-2 focus:ring-indigo-500/20'
+
 type PriceField = 'price' | 'price_wholesale'
 
 export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
   const [rows, setRows] = useState<Product[]>(products)
   const [priceErrors, setPriceErrors] = useState<Record<string, string>>({})
   const [unlockErrors, setUnlockErrors] = useState<Record<string, string>>({})
+  const [categoryErrors, setCategoryErrors] = useState<Record<string, string>>({})
+  // Id del producto cuya celda de categoría está en modo edición (una sola a la vez).
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null)
+  const [categoryDraft, setCategoryDraft] = useState('')
   // Texto que el usuario está tipeando ahora mismo, separado del valor confirmado
   // por el servidor que vive en `rows`. Mientras haya una entrada acá, el input
   // muestra este valor; al confirmar (éxito o error) se limpia y el input vuelve
@@ -34,6 +42,7 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
   useEffect(() => {
     setRows(products)
     setDraftPrices({})
+    setEditingCategoryId(null)
   }, [products])
 
   function handlePriceChange(
@@ -119,6 +128,58 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
     }
   }
 
+  async function handleCategoryBlur(row: Product, newValue: string) {
+    // `row` viene de `rows` (estado confirmado por el servidor), es la base
+    // correcta para la comparación de "sin cambios" — igual que en el precio.
+    const previousValue = row.category ?? ''
+    // Salir de modo edición ya en el blur: `rows` no se toca hasta la respuesta,
+    // así que la celda vuelve a mostrar el valor anterior sin ningún cambio optimista.
+    setEditingCategoryId(null)
+
+    if (newValue === previousValue) {
+      return
+    }
+
+    if (!row.external_category_id) {
+      // No debería pasar en la práctica (todo producto external tiene categoría
+      // asignada por el sync), pero sin id no hay URL válida para el PATCH.
+      setCategoryErrors((current) => ({
+        ...current,
+        [row.id]: 'No se pudo guardar la categoría. Intentá de nuevo.',
+      }))
+      return
+    }
+
+    try {
+      const { category } = await apiPatch<{
+        category: { id: string; display_name: string }
+        productsUpdated: number
+      }>(`/api/v1/admin/external-categories/${row.external_category_id}`, {
+        display_name: newValue,
+      })
+
+      // El rename propaga a TODAS las filas de esa categoría, no solo a la editada.
+      setRows((current) =>
+        current.map((r) =>
+          r.external_category_id === row.external_category_id
+            ? { ...r, category: category.display_name }
+            : r,
+        ),
+      )
+      setCategoryErrors((current) => {
+        if (!(row.id in current)) return current
+        const rest = { ...current }
+        delete rest[row.id]
+        return rest
+      })
+    } catch {
+      setCategoryErrors((current) => ({
+        ...current,
+        [row.id]: 'No se pudo guardar la categoría. Intentá de nuevo.',
+      }))
+    }
+  }
+
   return (
     <table className="w-full border-collapse text-left">
       <thead>
@@ -141,6 +202,7 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
           const retailError = priceErrors[`${product.id}-price`]
           const wholesaleError = priceErrors[`${product.id}-price_wholesale`]
           const unlockError = unlockErrors[product.id]
+          const categoryError = categoryErrors[product.id]
 
           return (
             <tr key={product.id} className="border-b border-border">
@@ -163,7 +225,32 @@ export function ExternalCatalogTable({ products }: ExternalCatalogTableProps) {
                 )}
               </td>
               <td className="px-3 py-2 text-sm font-semibold text-[#EDEDF0]">{product.name}</td>
-              <td className="px-3 py-2 text-sm text-[#A1A1AC]">{product.category ?? product.name}</td>
+              <td className="px-3 py-2 text-sm text-[#A1A1AC]">
+                {editingCategoryId === product.id ? (
+                  <input
+                    type="text"
+                    value={categoryDraft}
+                    autoFocus
+                    aria-label={`Categoría de producto ${product.id}`}
+                    className={CATEGORY_INPUT_CLASSES}
+                    onChange={(event) => setCategoryDraft(event.target.value)}
+                    onBlur={() => handleCategoryBlur(product, categoryDraft)}
+                  />
+                ) : (
+                  <span
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setEditingCategoryId(product.id)
+                      setCategoryDraft(product.category ?? '')
+                    }}
+                  >
+                    {product.category ?? '—'}
+                  </span>
+                )}
+                {categoryError && (
+                  <p className="mt-1 text-xs text-error">{categoryError}</p>
+                )}
+              </td>
               <td className="px-3 py-2 font-mono text-xs text-[#A1A1AC]">{product.sku ?? '—'}</td>
               <td className="px-3 py-2 text-sm text-[#A1A1AC]">{product.stock}</td>
               <td className="px-3 py-2 text-sm text-[#6B6B76]">{formatOriginPrice(product.source_price_retail)}</td>
