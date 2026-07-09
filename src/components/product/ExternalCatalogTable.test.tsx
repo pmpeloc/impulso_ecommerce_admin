@@ -263,8 +263,10 @@ describe('ExternalCatalogTable', () => {
       category: 'Almohadones',
       external_category_id: 'cat-1',
     })
+    // Mock returns a SERVER-normalized value (different from what was typed).
+    // This verifies the component uses the API response, not the locally typed value.
     mockedApiPatch.mockResolvedValue({
-      category: { id: 'cat-1', display_name: 'Almohadones Premium' },
+      category: { id: 'cat-1', display_name: 'Almohadones Premium (normalizado)' },
       productsUpdated: 1,
     })
 
@@ -281,6 +283,10 @@ describe('ExternalCatalogTable', () => {
         { display_name: 'Almohadones Premium' },
       )
     })
+
+    // Assert the component displays the SERVER'S value, not the locally typed value
+    expect(screen.getByText('Almohadones Premium (normalizado)')).toBeInTheDocument()
+    expect(screen.queryByText('Almohadones Premium')).not.toBeInTheDocument()
   })
 
   it('blur sin cambiar el valor de categoría no dispara PATCH', async () => {
@@ -313,8 +319,10 @@ describe('ExternalCatalogTable', () => {
       category: 'Almohadones',
       external_category_id: 'cat-1',
     })
+    // Mock returns a SERVER-normalized value (different from what was typed).
+    // This verifies the component uses the API response, not the locally typed value.
     mockedApiPatch.mockResolvedValue({
-      category: { id: 'cat-1', display_name: 'Almohadones Premium' },
+      category: { id: 'cat-1', display_name: 'Almohadones Premium (normalizado)' },
       productsUpdated: 2,
     })
 
@@ -327,9 +335,11 @@ describe('ExternalCatalogTable', () => {
     fireEvent.change(input, { target: { value: 'Almohadones Premium' } })
     fireEvent.blur(input)
 
+    // Assert both rows display the SERVER'S normalized value, not the locally typed value
     await waitFor(() => {
-      expect(screen.getAllByText('Almohadones Premium')).toHaveLength(2)
+      expect(screen.getAllByText('Almohadones Premium (normalizado)')).toHaveLength(2)
     })
+    expect(screen.queryByText('Almohadones Premium')).not.toBeInTheDocument()
   })
 
   it('cuando el PATCH de categoría rechaza, la celda vuelve a mostrar el valor original y muestra un error', async () => {
