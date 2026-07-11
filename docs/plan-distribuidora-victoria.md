@@ -1,4 +1,4 @@
-# Impulso Ecommerce Admin — Plan de Tareas (Distribuidora Nahuel / fuente externa)
+# Impulso Ecommerce Admin — Plan de Tareas (Distribuidora Nehemías / fuente externa)
 
 **Spec de referencia:** `docs/spec-distribuidora-victoria.md`
 **Generado:** 2026-07-06

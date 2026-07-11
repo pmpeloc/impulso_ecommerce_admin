@@ -1,6 +1,6 @@
-# Spec — Admin de catálogo externo (Distribuidora Nahuel / fuente externa)
+# Spec — Admin de catálogo externo (Distribuidora Nehemías / fuente externa)
 
-**Sprint:** Distribuidora Nahuel (fuente externa de productos)
+**Sprint:** Distribuidora Nehemías (fuente externa de productos)
 **Fecha:** 2026-07-06
 **Depende de:** `impulso_ecommerce_api` — spec/plan `distribuidora-victoria` (endpoints admin nuevos y
 campos nuevos en `Product`/`TenantConfig`). Coordinarse: los endpoints deben existir antes de consumirlos.
@@ -22,7 +22,7 @@ campos nuevos en `Product`/`TenantConfig`). Coordinarse: los endpoints deben exi
 
 `impulso_ecommerce_admin` hoy asume un único flujo: alta manual de producto por foto + audio
 (`ProductForm.tsx`), un precio único (`price`), y ninguna noción de "de dónde viene este producto".
-Con Distribuidora Nahuel aparece un tenant cuyo catálogo entero viene sincronizado de un proveedor
+Con Distribuidora Nehemías aparece un tenant cuyo catálogo entero viene sincronizado de un proveedor
 externo (Distribuidora Victoria) — el dueño del negocio nunca da de alta un producto a mano, solo ajusta
 precios y categorías sobre lo que ya llegó del sync diario.
 

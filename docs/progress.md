@@ -103,7 +103,7 @@
 [DONE] src/app/(auth)/layout.test.tsx — cobertura de logout/redirección por sesión expirada
 [DONE] verificación — 187 tests frontend pasan y `next build` finaliza correctamente
 
-## Sprint Distribuidora Nahuel — Admin de catálogo externo
+## Sprint Distribuidora Nehemías — Admin de catálogo externo
 
 > Completado (código): 2026-07-09 — pendiente: smoke manual en navegador antes de deployar
 > Spec/Plan: `docs/spec-distribuidora-victoria.md`, `docs/plan-distribuidora-victoria.md`
@@ -140,4 +140,4 @@
 
 ### Pendiente antes de habilitar esto en producción
 - Smoke manual en navegador con un tenant `'own'` (Renuevo/Antonello) y otro `'external'` — confirmar cero diferencias visuales en el primero y funcionamiento end-to-end en el segundo.
-- Todo lo pendiente del lado de `impulso_ecommerce_api` (migrations sin aplicar contra Supabase real, `SYNC_SECRET`, markup/comisión de Distribuidora Nahuel, cron de 30 min, dominio y WhatsApp real) — ver `impulso_ecommerce_api/docs/progress.md`, sección "Sprint Distribuidora Nahuel".
+- Todo lo pendiente del lado de `impulso_ecommerce_api` (migrations sin aplicar contra Supabase real, `SYNC_SECRET`, markup/comisión de Distribuidora Nehemías, cron de 30 min, dominio y WhatsApp real) — ver `impulso_ecommerce_api/docs/progress.md`, sección "Sprint Distribuidora Nehemías".
