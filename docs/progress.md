@@ -141,3 +141,19 @@
 ### Pendiente antes de habilitar esto en producción
 - Smoke manual en navegador con un tenant `'own'` (Renuevo/Antonello) y otro `'external'` — confirmar cero diferencias visuales en el primero y funcionamiento end-to-end en el segundo.
 - Todo lo pendiente del lado de `impulso_ecommerce_api` (migrations sin aplicar contra Supabase real, `SYNC_SECRET`, markup/comisión de Distribuidora Nehemías, cron de 30 min, dominio y WhatsApp real) — ver `impulso_ecommerce_api/docs/progress.md`, sección "Sprint Distribuidora Nehemías".
+
+## Pantalla de Configuración (Settings) — pendiente, detectado 2026-07-15
+
+`useTenantConfig.ts` existe pero solo se usa para gating interno (`product_source_mode` en el dashboard)
+— nunca se construyó una pantalla para que el dueño del negocio edite su propio `tenant_config` (branding,
+WhatsApp, checkout methods, nav sections, theme), a pesar de que `GET/PUT /admin/tenant-config` ya existe
+en `impulso_ecommerce_api` desde el Sprint 3 del refactor multi-tenant.
+
+Bug relacionado encontrado en `impulso_ecommerce_api/src/utils/admin-views.ts`: `TENANT_CONFIG_ADMIN_FIELDS`
+no incluye `nav_sections`, `tagline`, `city`, `default_product_image_url`, `theme_id` — campos agregados
+en la migration 013 (Sprint Distribuidora Nehemías, sección "Fase 0" de este mismo repo asumía que sí
+estaban). El endpoint `PUT /admin/tenant-config` los acepta a nivel de tabla pero el `GET` nunca los
+devuelve al dueño del negocio ni la respuesta del `PUT` los refleja — hay que corregir el allowlist antes
+o junto con la pantalla nueva, si no la edición de esos campos queda invisible para quien la use.
+
+No es parte de ningún sprint activo — queda como deuda documentada hasta que se priorice.
